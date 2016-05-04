@@ -1,12 +1,12 @@
 ---
-title: 合并分离.a和.framework库
+title: 合并和分离.a和.framework库
 date: 2016-04-29 18:50:52
 updated: 2016-04-29 18:51:41
 categories: iOS
 tags: [iOS]   
 ---
 
-xcode在生成库（.a或.framework）的时候，通常会生成两个版本，一个是用于真机的版本，一个是用于模拟器的版本
+Xcode在生成库（.a或.framework）的时候，通常会生成两个版本，一个是用于真机的版本，一个是用于模拟器的版本
 
 * 真机：`armv7`, `armv7s`, `arm64`架构
 * 模拟器：`i386`, `x86_64`
@@ -27,6 +27,7 @@ xcode在生成库（.a或.framework）的时候，通常会生成两个版本，
   input file liba-arm64.a is not a fat file
   Non-fat file: liba-arm64.a is architecture: arm64
   ```
+  如果静态库支持多种架构，那么就是一个`fat file`
 2. 合并两个库
   ```
   lipo -create liba-arm64.a liba-i386.a -output liba.a
@@ -39,7 +40,7 @@ xcode在生成库（.a或.framework）的时候，通常会生成两个版本，
   ```
 
 ## 二、.Framework库合并与拆分
-.framework库与.a库类似，只是添加了头文件和资源，其实相当于一个目录，所以操作的是里面的库文件，而不是xxx.framework文件
+.framework库与.a库类似，只是.framework库可以包含Header和Bundle，其实相当于一个目录，所以操作的是里面的库文件，而不是`xxx.framework`文件
 
 例如有两个不同架构的库
   * `IJKMediaFramework_x86_64.framework`
@@ -106,4 +107,4 @@ fi
 切换到Release模式，分别切换到模拟器和真机编译一次，编译完成后会自动打开输出文件夹，通过`lipo`命令查看
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-4-29/39574369.jpg)
 
-完成，接下来可以直接用了
+完成，接下来可以直接用了合并后的库了

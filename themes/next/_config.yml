@@ -146,6 +146,7 @@ social_icons:
 links_title: 好友链接
 links:
   Martinlau: http://blog.martinlau.org/
+  菜园子: http://www.liubaicai.net
 
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
@@ -240,7 +241,7 @@ mathjax:
 # swiftype_key: g866mHUruYsEq4qs-AjJ
 
 # Baidu Analytics ID
-baidu_analytics: 9b8faaa3e23701354da463520ae2442f
+baidu_analytics: 059a628b801f46cca6cc751347bd59be
 
 # Duoshuo ShortName
 duoshuo_shortname: bomo

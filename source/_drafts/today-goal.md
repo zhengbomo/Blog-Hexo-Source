@@ -3,11 +3,12 @@ title: 今日目标
 tags:
 ---
 
-2016-04-20
+2016-05-03
   * 完成茄子快传Desktop版本传输测试
   * 完成Mobile扫描二维码链接PC逻辑
   * 完善收发页面重新发送文件
   * 完成相对布局+Masonry blog
+
 
 
 TODO：
@@ -19,3 +20,8 @@ TODO：
 * objc没有泛型，如何适配java泛型模型（服务器接口）
 * 洗牌算法
 <!-- more -->
+
+
+<!-- * git
+  * rebase, merge
+  * fast-forward -->
