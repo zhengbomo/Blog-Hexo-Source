@@ -1,5 +1,5 @@
 ---
-title: Cocoapod创建和发布你的Pod
+title: 为自己的库添加CocoaPods支持
 categories: iOS
 tags:
   - cocoapod
