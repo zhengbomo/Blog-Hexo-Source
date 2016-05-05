@@ -10,6 +10,8 @@ updated: 2016-05-05 11:24:28
 
 > 函数式编程（英语：functional programming）或称函数程序设计，又称泛函编程，是一种编程范型，它将电脑运算视为数学上的函数计算，并且避免使用程序状态以及易变对象。函数编程语言最重要的基础是λ演算（lambda calculus）。而且λ演算的函数可以接受函数当作输入（引数）和输出（传出值）。
 
+<!-- more -->
+
 
 上面是[维基百科](https://zh.wikipedia.org/wiki/%E5%87%BD%E6%95%B8%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80)上的解释，可以把编程语言中的函数视为数学函数一样，函数可以与普通变量一样，作为另一个函数的参数，如下
 ```
@@ -17,7 +19,7 @@ f(x) = x * x + 2
 g(x) = f(x) + f(x + 2)
 h(x) = g(x) + f(x - 1)
 ```
-函数式编程有以下几个特点
+函数式编程有以下几个特点（下面例子用的是python）
 * 避免状态变量，注重状态传递，而不是状态维护  
   非函数式
   ```python
@@ -34,9 +36,11 @@ h(x) = g(x) + f(x - 1)
 * 函数是一等公民  
   即函数与变量一样，可以作为参数传递
   ```python
+  # 定义一个过滤器
   def myFilter(x):
     return x < 5
 
+  # 过滤函数
   def myMap(filter, array):
     result = []
     for i in array:
@@ -44,6 +48,7 @@ h(x) = g(x) + f(x - 1)
         result.append(i)
     return result
 
+  # 过滤集合
   print myMap(myFilter, [1,2,5,7,8,9])
   # 输出 [1, 2]
   ```
