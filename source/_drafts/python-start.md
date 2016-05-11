@@ -25,7 +25,9 @@ python比较使用于编写工具脚本，例如如果你有一些大量的重�
 > 通常来说就是使用脚本自动完成一些自定义的行为，主要是python支持的库（module）众多，能帮助你节省不少时间  
 > 当然如果你是开发人员，可能通过C++/C#/Java来写自动化的工具，但是这些工具可能会显得庞大而臃肿，可能会让人觉得这是烦躁而漫长的工作，那么你可以用python试试
 
-当然python能做的事远不止这些，支持的类库涵盖了很多领域
+当然python能做的事远不止这些，支持的类库涵盖了很多领域，如人工智能，机器学习，图像处理等，当然，很多功能其他语言也能做到，python最大的好处就是类库众多，我们很多时候都不需要重复造轮子，特别是对于追求效率的你来说，或许是个好选择，
+
+> 语言只是个工具，没有语言是万能的，什么好用用什么
 
 ## 安装python
 学习python的时候建议使用python 2.x版本，3.x版本相对于2.x改动比较大，并且一些老的库不支持3.x，我这里使用的是`Python 2.7.10`，mac系统自带python，可以通过下面命令查看python的版本
@@ -37,9 +39,6 @@ $ python -V
 $ python3 -V
 ```
 
-### python升级版本
-//TODO：
-
 ## 工具
 与其他脚本语言类似（php, js）使用普通的文本编辑器即可，我这里用的是[Sublime2](http://www.sublimetext.com/2)，当然也可以使用一些集成IDE
   * Atom：与Sublime类似，支持代码高亮，自动补齐
@@ -48,8 +47,8 @@ $ python3 -V
 
 如果是刚开始学习，推荐使用文本工具（Sublime或Atom）
 
-## 基本语法
-在Terminal输入python
+## 交互式编程
+交互式编程相当于一问一答的方式，在Terminal输入python进入交互式模式，与其他语言不通，python不以分号结尾，并且通过缩进识别代码块
 ```bash
 localhost:~ bomo$ python
 Python 2.7.10 (default, Oct 23 2015, 19:19:21)
@@ -62,7 +61,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 python支持如下数据类型
   * [数值类型](https://docs.python.org/2.7/library/functions.html#complex)
     `int`, `long`, `float`, `decimal`数值, `fraction`有理数, `complex`复数
-      有理数和复数用的比较少，不做深入
   * [迭代器类型](https://docs.python.org/2.7/library/stdtypes.html#iterator-types)
     迭代器类型包括，列表，字典，元组，字符串
     ```python
@@ -656,6 +654,7 @@ issubclass(son, father)   # True, son继承自father
 ```
 
 ## 异常
+python的异常处理和其他语言类似:`try-except-finally`，抛出异常使用`raise`
 ```python
 try:
     raise Exception('spam', 'eggs')
