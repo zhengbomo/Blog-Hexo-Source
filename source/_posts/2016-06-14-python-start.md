@@ -7,7 +7,6 @@ date: 2016-06-14 20:01:29
 updated: 2016-06-14 20:01:29
 ---
 
-
 一直想学习一下python语言，拥有动态语言的特性，还是解释型语言，拥有高级数据结构，可以以简单而高效的方式进行面向对象编程，并且python类库众多，适合写脚本，特别是一些小工具，最近把python语法大概捋了一遍，在这里记录学习的过程
 
 <!-- more -->
@@ -477,6 +476,8 @@ class test:
 t = test(10, 20)
 t.x + t.y
 ```
+> 注意，python的构造函数不支持重载，只能有一个构造函数，可以通过可变参数实现多构造函数
+> 在调用父类的构造方法见后面新式类和经典类
 
 ### 方法与变量
 类变量定义在类中，实例变量定义在构造函数中，python中的类实例可以直接设置属性，如果属性不存在，则添加属性
@@ -506,9 +507,27 @@ test.count        # 2
 t.count           # 10
 tt.count          # 20
 ```
+
+### 类里面引用全局变量
+当类里面需要引用外部的全局变量的时候需要，加上global关键字
+```python
+global_count = 0
+global_count2 = 0
+
+def test():
+    global global_count   # 声明全局变量
+    global_count += 10
+
+    global_count2 = 10    # 局部变量
+    print '%d, %d' % (global_count, global_count2)
+
+print '%d, %d' % (global_count, global_count2)
+test()
+print '%d, %d' % (global_count, global_count2)  
+```
+
 ### 实例方法，类方法，静态方法
-在python中这几种方法特别容易
-类属性和方法不能重名，否则会相互覆盖
+在python中这几种方法特别容易，类属性和方法不能重名，否则会相互覆盖
 
 ```python
 class Person:
@@ -527,7 +546,7 @@ class Person:
         print "class method" + Person.staticName
 ```
 
-其他语言如java和C#都只有静态方法和类方法，而python多了一个类方法，在大多数情况下，使用静态方法即可，在需要获取调用类的信息的时候，则需要使用类方法
+其他语言如java和C#都只有静态方法和类方法，而python多了一个类方法，在大多数情况下，使用静态方法即可，在需要获取调用类的信息的时候（如类变量，类类型，类名等），则需要使用类方法
 
 > 方法的第一个参数被命名为 self。这仅仅是一个约定：对 Python 而言，名称 self 绝对没有任何特殊含义(但是请注意：如果不遵循这个约定，对其他的 Python 程序员而言你的代码可读性就会变差，而且有些类查看器程序也可能是遵循此约定编写的。)，在交互式命令行中会报错
 
@@ -554,6 +573,44 @@ isinstance(s, father)     # True
 issubclass(son, father)   # True, son继承自father
 isinstance(obj, Class)    # 判断实例是否是某个类
 ```
+
+### 新式类和经典类
+新式类：从object类继承的类，继承顺序深度优先
+经典类：不从object继承的类，继承顺序广度优先，不支持super
+```python
+# 新式类
+class Parent(object):
+    def __init__(self):
+        print 'parent'
+    def hi(self):
+        print 'parent hi'
+
+class Son(Parent):
+    def __init__(self):
+        # 新式类支持super
+        super(Son, self).__init__()
+        print 'son'
+    def hi(self):
+        super(Son, self).hi()
+        print 'son hi'
+
+# 经典类
+class Parent:
+    def __init__(self):
+        print 'parent'
+    def hi(self):
+        print 'parent hi'
+
+class Son(Parent):
+    def __init__(self):
+        # 不支持super
+        Parent.__init__(self)
+        print 'son'
+    def hi(self):
+        Parent.hi(self)
+        print 'son hi'
+```
+子类可以通过`super(类, 对象)`获取父对象父类对象的实例，然后可以调用父类的（同名）方法，就相当于Java中的`super`，C#中的`base`
 
 ## 模块module, 类class, 包package
 > python在处理功能复用组织结构切分为模块,包和面向对象的类，其结构类似于C#/Java的命名空间，用于
