@@ -1,9 +1,9 @@
 ---
-title: python多线程学习笔记
-categories: python
+title: Python多线程学习笔记
+categories: Python
 tags:
   - 多线程
-  - python
+  - Python
 date: 2016-06-14 23:42:53
 updated: 2016-06-14 23:42:53
 ---
@@ -17,7 +17,7 @@ updated: 2016-06-14 23:42:53
 
 ## thread模块
 使用`start_new_thread`方法开启一个线程，第一个参数为线程函数，第二个参数为参数，如果函数没有参数，要传空元组
-```python
+```Python
 import time
 import thread
 
@@ -36,13 +36,13 @@ if __name__ == '__main__':
 ```
 
 上面通过`sleep`防止主线程退出导致其他线程也跟着退出，显然不靠谱，这时候我们可以通过锁的方式控制线程执行顺序
-```python
+```Python
 lock = thread.allocate_lock()  # 返回一个新的锁定对象。
 lock.acquire()                 # 请求锁，如果该所没被占用，则成功返回，如果被占用，则等待直到锁被释放
 lock.release()                 # 释放锁
 ```
 例子：
-```python
+```Python
 import time
 import thread
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
 ## threading模块
 thread模块不支持守护线程，当主线程退出时，所有子线程不管是否工作都会被结束，而threading更强大，也支持守护线程  
-```python
+```Python
 import time
 import threading
 
@@ -106,7 +106,7 @@ Thread对象
 * run(): 表示线程活动的方法
 
 当Thread对象调用start方法的时候，默认会调用run方法，所以我们可以封装线程函数到Thread对象里面，如下
-```python
+```Python
 import time
 import threading
 class MyThread(threading.Thread):
@@ -125,7 +125,7 @@ t.start()
 
 
 ## 线程同步问题
-与其他语言一样，python也提供了线程同步相关的支持，Python支持下面几种线程同步锁
+与其他语言一样，Python也提供了线程同步相关的支持，Python支持下面几种线程同步锁
 
 线程锁的锁定释放的流程如下
 > 请求锁定 —> 进入锁定池等待 —> 获取锁 —> 已锁定 —> 释放锁
@@ -133,7 +133,7 @@ t.start()
 ### 1. Lock & RLock
 1. Lock
 指令锁，只有两种状态
-```python
+```Python
 mutex = threading.Lock()    # 构造方法
 mutex.acquire()             # 请求锁，成功则锁定，如果该锁已被锁定，则阻塞等待
 # mutex.acquire()           # 会发生死锁
@@ -142,7 +142,7 @@ mutex.release()             # 释放锁，使用前该锁必须已被锁定
 
 2. RLock
 可重入锁，为了保证线程对共享资源的独占，又避免死锁的出现，允许在`同一线程`中多次请求锁，如下：
-```python
+```Python
 mutex = threading.RLock()    # 构造方法
 mutex.acquire()              # 请求锁
 mutex.acquire()              # 请求锁，不会死锁
@@ -152,7 +152,7 @@ mutex.release()              # 请求多少次就要释放多少次，成对出�
 
 ### 2. Semaphore
 信号量，比Lock多了计数器，可以记录多次请求和释放，技术器不能小于0，小于0则会阻塞，通常可以用在控制并发数的情况下，用法与Lock类似
-```python
+```Python
 semaphore = threading.Semaphore(2)    # 构造一个信号量，容量为2
 semaphore.acquire()                   # 请求信号，计数器-1，执行完后为1
 semaphore.acquire()                   # 请求信号，计数器-1，执行完后为0
@@ -164,7 +164,7 @@ semaphore.release()                   # 请求信号，计数器+1，执行完�
 ### 3. Event
 与Lock相反，Event内部维护一个标志位，初始化为false，调用set置为true，调用clear置为flase
 
-```python
+```Python
 import time
 import threading
 
@@ -186,14 +186,14 @@ if __name__ == '__main__':
 ```
 
 ### 4. Condition
-Condition称为条件变量，提供了python多线程中复杂的同步支持，除了提供与Lock类似的`acquire`和`release`方法外，还提供了`wait`和`notify`方法，支持通知
+Condition称为条件变量，提供了Python多线程中复杂的同步支持，除了提供与Lock类似的`acquire`和`release`方法外，还提供了`wait`和`notify`方法，支持通知
 
 * wait：release锁，阻塞，等待notify唤醒
 * notify：唤醒由wait阻塞的线程
 
 
 下面使用Condition来模拟一个捉迷藏的游戏
-```python
+```Python
 import threading
 import time
 class Seeker(threading.Thread):
@@ -244,7 +244,7 @@ hider.start()
 
 ## 队列Queue
 多线程很多时候可以与队列一起使用，把任务放到队列，保证线程任务的执行顺序
-```python
+```Python
 import Queue
 myqueue = Queue.Queue(maxsize = 10) # 指定容量，不指定则无限大
 
@@ -254,7 +254,7 @@ myqueue.get(block=False)            # 取出队列中的第一个元素，如果
 ```
 可以利用Queue写一个线程安全的队列，如对数据库的操作可以放在一个队列里面进行，这样就可以省去线程同步带来的问题了
 
-```python
+```Python
 import threading
 import time
 import Queue
@@ -290,10 +290,10 @@ print 'complete'
 ```
 
 ## GIL
-刚接触python多线程的时候可能会经常遇到GIL这个词，并且GIL还经常与python不能高效的实现多线程划上等号
+刚接触Python多线程的时候可能会经常遇到GIL这个词，并且GIL还经常与Python不能高效的实现多线程划上等号
 GIL（global interpreter lock）不是Python的特性，而是CPython的特性，而CPython是通常是Python默认的解释器，而Python本身，不依赖于GIL
 
-CPython编译器引入了GIL全局锁（进程）来解决多线程环境下的数据同步问题，即python对象的内部是thread-safe的，并且被开发者广泛依赖，当然这种简单粗暴的锁不可避免也带来了一定的性能损耗，并且由于GIL的存在，同一时刻只能有一个线程在运行，Python无法充分的利用多核CPU带来的多核计算
+CPython编译器引入了GIL全局锁（进程）来解决多线程环境下的数据同步问题，即Python对象的内部是thread-safe的，并且被开发者广泛依赖，当然这种简单粗暴的锁不可避免也带来了一定的性能损耗，并且由于GIL的存在，同一时刻只能有一个线程在运行，Python无法充分的利用多核CPU带来的多核计算
 
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-17/73225581.jpg)
 * CPU密集型通常是计算为主，如图像处理，复杂的数学计算等
@@ -306,13 +306,13 @@ CPython编译器引入了GIL全局锁（进程）来解决多线程环境下的�
 
 当然进程与线程又有自身的优缺点，进程不共享内存，多进程通讯比较麻烦，而线程共享所有内存，通讯更方便，具体如何取舍还是得看具体业务了
 
-关于GIL的更多介绍，可以参见[这里](http://cenalulu.github.io/python/gil-in-python/)
+关于GIL的更多介绍，可以参见[这里](http://cenalulu.github.io/Python/gil-in-Python/)
 
 ## 测试CPU密集型和IO密集型场景下的多线程效果
 1. CPU密集型:给一张图片创建1000张缩略图
 2. IO密集型:给一个文件进行重复的读写和删除1000次操作
 
-```python
+```Python
 import os
 import time
 import threading
