@@ -25,7 +25,7 @@ pPython比较使用于编写工具脚本，例如如果你有一些大量的重�
   * 从多个excel文件中提取相关信息并输出到一个excel中
   * 批量抓取网页信息并保存到数据库（爬虫）
 
-> 通常来说就是使用脚本自动完成一些自定义的行为，主要是Python支持的库（module）众多，能帮助你节省不少时间  
+> 通常来说就是使用脚本自动完成一些自定义的行为，主要是Python支持的库（module）众多，能帮助你节省不少时间
 > 当然如果你是开发人员，可能通过C++/C#/Java来写自动化的工具，但是这些工具可能会显得庞大而臃肿，可能会让人觉得这是烦躁而漫长的工作，那么你可以用Python试试
 
 当然Python能做的事远不止这些，支持的类库涵盖了很多领域，如人工智能，机器学习，图像处理，金融，物理学等，当然，很多功能其他语言也能做到，Python最大的优势就是类库众多，处理灵活，我们很多时候都不需要重复造轮子，特别是对于追求效率的你来说，或许是个好选择，
@@ -72,7 +72,7 @@ Python支持如下数据类型
 ## 2. 运算符
   * `+` `-` `*` `/` `%`
   * `//`, `**`
-    ```Python
+    ```python
     # 取整（不大于该数）
     11 // 3.0     # 3.0
     11 // -3      # -4
@@ -85,14 +85,19 @@ Python支持如下数据类型
   * `is`, `is not`
     判断两个对象是否相同
     > is 与 == 的区别
-    ```Python
+    ```python
     a, b = 1, 1.0
     a == b    # True
     a is b    # False
     ```
 
+  python（2.5+）也支持三元运算符，用法与C语言有点出入，形式为
+  ```python
+  x if x > y else y     # 等价于C语言的 x > y ? x : y
+  ```
+
   在交互运算中，Python会把最近一次的表达式的值赋值给`_`，__该变量是只读的，不要尝试给其赋值__，一些不需要的变量有时也用`_`表示（其实跟普通的变量i一样），如for
-  ```Python
+  ```python
   a = 10
   10 + 32     # 42
   a + _       # 52
@@ -104,7 +109,7 @@ Python支持如下数据类型
 ## 3. 流程控制与循环
 Python的流程控制跟其他语言差不多，关键字有：`if-else`, `for`, `while`, `break`, `continue`, `pass`
 ### 3.1 if-else
-```Python
+```python
 if x == 0:
     print 'Zero'
     print 'ff'
@@ -115,7 +120,7 @@ else:
 ```
 
 ### 3.2 for
-```Python
+```python
 words = ['mac', 'windows', 'linux']
 for w in words:
    print w
@@ -138,7 +143,7 @@ def 函数名(函数参数列表):
   函数体
 ```
 eg: 输出一个Fibonacci斐波那契序列
-```Python
+```python
 def fib(n):
   a, b = 0, 1
   while a < n:
@@ -148,8 +153,8 @@ def fib(n):
 fib(2000)             # 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
 ```
 
-### 4.2 默认参数
-```Python
+### 4.2 参数默认值
+```python
 i = 10
 def test(a = 12, b = i):
   print b
@@ -159,8 +164,27 @@ test(1,2)
 test(b = 2, a = 12)    # 也可以指定参数
 ```
 
+从上面例子可以看到，参数的默认值在解释器运行到函数的时候就确定了，如上面的变量`b`，后面修改的的变量i与函数test没有关联了，有一点需要注意的是，如果默认参数是一个对象的时候，也是同样的，如下面例子
+```python
+def test(data=[]):      # 默认参数为空list
+    data.append(1)
+    return data
+
+print test()        # 输出：[1]
+print test()        # 输出：[1, 1]
+print test()        # 输出：[1, 1, 1]
+```
+Python解释器在解释道函数test的时候就确定好了函数test的参数默认值，所以每次调用使用的参数对象都是同一个，上面函数应该定义为如下方式
+```python
+def test(data=None):      # 默认参数为空list
+    if data is None:
+        data = []
+    data.append(1)
+    return data
+```
+
 ### 4.3 可变参数
-```Python
+```python
 def test(a, *b):
    print a
    for i in b
@@ -171,7 +195,7 @@ test('hello', 'bob', 'james', 'adophi')     # 'hello', 'bob', 'james', 'adophi'
 > 可变参数必须定义为最后一个（在可变字典参数前）
 
 ### 4.4 可变字典参数
-```Python
+```python
 def test(a, *b, **c):
    keys = sorted(c.keys())
      for kw in keys:
@@ -189,7 +213,7 @@ lambda 函数参数列表: 函数体
 ```
 eg: 使用Lambda表达式给列表排序
 
-```Python
+```python
 pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
 
 
@@ -202,7 +226,7 @@ pairs
 
 ## 6. 序列
 首先看看迭代器类型，Python常用的序列类型有list, tuple, str
-```Python
+```python
 squares = [1, 4, 9, 16, 25]             # 列表
 squares = ['spam', 'eggs', 100, 1234]   # 支持不同类型
 squares[1] = "eeee"                     # 支持索引，越界会报错
@@ -226,7 +250,7 @@ range(0, 12, 3)   # [0, 3, 6, 9]
 
 ### 6.1. 字符串
 字符串是特殊的列表
-```Python
+```python
 print '"Yes," he said.'               # 使用单双引号表示单行字符串："..." '...'
 print 'First line.\nSecond line.'     # 使用反斜杠`\`转义，
 
@@ -241,22 +265,38 @@ bb
 ```
 
 格式化字符串，Python使用`%`隔开格式化字符串和值
-```Python
+```python
 from math import pi
-print 'Hello %s, pi is %10.2f' % ('World', pi)     
+print 'Hello %s, pi is %10.2f' % ('World', pi)
 # Hello World, pi is 3.14
 ```
 
+当像`%s`这种符号变多了之后，就很难分清楚哪个和哪个了，Python支持使用dict作为格式化参数，如下
+```python
+print '%(name)s is %(age)d years old' % {'name': 'bomo', 'age': 18}
+# bomo is 18 years old
+```
+还有这种方式
+```python
+print '{name} is {age:2d} years old'.format(name='bomo', age=18)
+# bomo is 18 years old
+```
+Python格式化字符串还支持索引
+```python
+print '{name} is {1:2d} years old'.format(12, 18, name='bomo')
+# bomo is 18 years old
+```
+最后一种方式是最Pythonic的，也是最推荐的方式
 
 ### 6.2 序列常用操作
 1. 加法乘法
-```Python
+```python
 squares + ['a', 'b']    # ['spam', 1234, 'a', 'b']
 l = squares * 2         # ['spam', 1234, 'a', 'b', 'spam', 1234, 'a', 'b']
 ```
 
 2. 元素操作
-```Python
+```python
 squares.append('jobs')                    # 添加
 squares.extend(['a', 'b', 'c', 'd'])      # 添加集合
 squares.insert(0, x)                      # 插入元素
@@ -267,14 +307,14 @@ squares.count('b')                        # 获取值为'b'的出现次数
 ```
 
 3. 统计操作
-```Python
+```python
 len(squares)
 max(squares)
 min(squares)
 ```
 
 4. 删除操作
-```Python
+```python
 a = [-1, 1, 66.25, 333, 333, 1234.5]
 del a[0]            # [1, 66.25, 333, 333, 1234.5]
 del a[2:]           # [1, 66.25]
@@ -282,7 +322,7 @@ del a[2:]           # [1, 66.25]
 
 ### 6.3 切片的原理
 切片内部是调用`__getitem__`，`__setitem__`,`__delitem__`和`slice`函数
-```Python
+```python
 a = [1, 2, 3, 4, 5, 6]
 x = a[1: 5]             # x = a.__getitem__(slice( 1, 5, None ))
 a[1: 3] = [10, 11, 12]  # a.__setitem__(slice(1, 3, None), [10, 11, 12])
@@ -291,8 +331,8 @@ del a[1: 4]         # a.__delitem__(slice(1, 4, None))
 
 ## 7. 元组tuple
 元组相当于多维数组，与序列一样，元组元素支持任意类型，用括号表示，括号有时可以省略（不产生歧义的情况下）
-```Python
-t = (1, 2)      
+```python
+t = (1, 2)
 t = 1, 2            # 省略括号
 t = ('a', 23)
 t = (['a', 1], ['b', 2])
@@ -310,14 +350,14 @@ cursor.execute('select * from user where gender = ?',
 ```
 
 元组各个元素可以同时赋值
-```Python
+```python
 t = (1, 2)
 x, y = t        # x = 1, y = 2
 x, y = 1, 2     # 同上
 ```
 
 元组使得函数返回多个值变得更加方便
-```Python
+```python
 def get_point():
     return (2, 4)
 ```
@@ -326,10 +366,10 @@ def get_point():
 
 ## 8. 字典dict
 用法与其他语言类似
-```Python
+```python
 tel = {'jack': 4098, 'sape': 4139, 'bomo': 10086}
 tel['guido'] = 4127
-del d['bomo']  
+del d['bomo']
 tel = dict(jack=4098, sape=4139)
 
 # 空字典
@@ -349,34 +389,34 @@ for (key, value) in tel.iteritems():
 ### 列表推倒式和字典推导式
 1. 列表推导式
 形式：`[expression for value in collection if condition]`，相当于
-```Python
-result = []  
-for value in collection:  
-    if condition:  
-        result.append(expression)  
+```python
+result = []
+for value in collection:
+    if condition:
+        result.append(expression)
 return result
 ```
 例如
-```Python
+```python
 [i for i in range(1,100) if i > 90]         # [91, 92, 93, 94, 95, 96, 97, 98, 99]
 ```
 
 2. 字典推导式
 形式：`[key_expression: value_expression for value in tuple]` ，相当于
-```Python
+```python
 result = {}
-for value in collection:  
-    if condition:  
+for value in collection:
+    if condition:
         result[key_expression] = value_expression
 return result
 ```
 例如：
-```Python
+```python
 {x+1: x**2 for x in (2, 4, 6, 8) if x <= 6}      # {3: 4, 5: 16, 7: 36}
 ```
 
 ## 9. 无序集set
-```Python
+```python
 basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
 fruit = set(basket)               # ['orange', 'pear', 'apple', 'banana']
 
@@ -391,16 +431,16 @@ a ^ b                       # set(['r', 'd', 'b', 'm', 'z', 'l'])
 ```
 
 ## 10. 迭代器类型常用操作
-* __enumerate__  
+* __enumerate__
 使用enumerate函数可以同时得到索引和值
-```Python
+```python
 for i, v in enumerate(['tic', 'tac', 'toe']):
    print(i, v)
 ```
 
 * __zip__
 多个循环可以用zip打包，以最短的list为准
-```Python
+```python
 questions = ['name', 'quest', 'favorite color']
 answers = ['lancelot']
 cc = ['lancelot', 'the holy grail', 'blue', 'eeeee']
@@ -415,16 +455,16 @@ for q, a, c in zip(questions, answers, cc):
 
 * __reversed__
 反序
-```Python
+```python
 for i in reversed([1,2,3]):
-   print(i)       
+   print(i)
 # 输出：3, 2, 1
 >>>
 ```
 
 * __iteritems__
 遍历字典使用iteritems可以同事获得key, value
-```Python
+```python
 knights = {'gallahad': 'the pure', 'robin': 'the brave'}
 for k, v in knights.iteritems():
    print k, v
@@ -433,25 +473,25 @@ for k, v in knights.iteritems():
 # robin the brave
 ```
 
-* __filter__  
+* __filter__
 过滤器，给定过滤函数和集合: `filter(function, sequence)`
-```Python
+```python
 def f(x):
   return x % 3 == 0 or x % 5 == 0
 filter(f, range(2, 25))     # [3, 5, 6, 9, 10, 12, 15, 18, 20, 21, 24]
 ```
 
-* __map__  
+* __map__
 给定集合和操作函数，返回操作后的集合：`map(function, sequence)`
-```Python
+```python
 def cube(x):
   return x*x
 map(i, range(1, 6))      # [1, 4, 9, 16, 25, 36]
 ```
 
-* __reduce__  
+* __reduce__
 首先操作前两个数，然后结果与后一个数运算，以此类推：`reduce(function, sequence)`
-```Python
+```python
 def add(x,y):
     return x+y
 reduce(add, range(1, 11))   # 1+2+3+4+5+6+7+8+9+10=55
@@ -464,7 +504,7 @@ reduce(lambda (x, y): x + y, range(1, 11))   # 55
 
 ## 12 类
 ### 12.1 构造函数`__init__`，析构函数`__del__`
-```Python
+```python
 class test:
   def __init__(self, x, y):
     self.x = x
@@ -481,11 +521,11 @@ t.x + t.y
 
 ### 12.2 方法与变量
 类变量定义在类中，实例变量定义在构造函数中，Python中的类实例可以直接设置属性，如果属性不存在，则添加属性
-```Python
-class test:  
-  count = 0;                                                # 定义类变量   
+```python
+class test:
+  count = 0;                                                # 定义类变量
   def __init__(self, c):                                    # 构造函数
-    self.count = c;                                         # 定义实例变量count  
+    self.count = c;                                         # 定义实例变量count
     self.name = 'bomo'                                      # 定义实例变量name
     self.__class__.count = self.__class__.count + 1;        # 操作类变量
 
@@ -500,7 +540,7 @@ class test:
   def test2(cls):
       print cls
 
-t = test(10)      
+t = test(10)
 test.count        # 1
 tt = test(20)
 test.count        # 2
@@ -510,7 +550,7 @@ tt.count          # 20
 
 ### 12.3 类里面引用全局变量
 当类里面需要引用外部的全局变量的时候需要，加上global关键字
-```Python
+```python
 global_count = 0
 global_count2 = 0
 
@@ -523,13 +563,13 @@ def test():
 
 print '%d, %d' % (global_count, global_count2)
 test()
-print '%d, %d' % (global_count, global_count2)  
+print '%d, %d' % (global_count, global_count2)
 ```
 
 ### 12.4 实例方法，类方法，静态方法
 在Python中这几种方法特别容易，类属性和方法不能重名，否则会相互覆盖
 
-```Python
+```python
 class Person:
     staticName = 'bomo'
     def __init__(self,name):
@@ -552,18 +592,18 @@ class Person:
 
 ### 12.5 继承
 父类放在子类定义的类名后的括号内，Python支持多继承
-```Python
+```python
 class DerivedClassName(Base1, Base2, Base3):
   pass
 class son(father):
   pass
-```  
+```
 
-> 单继承：如果子类有自己实现的构造函数，则不会自动调用父类的构造函数，如果子类没有实现构造函数，则会继承父类的构造函数  
+> 单继承：如果子类有自己实现的构造函数，则不会自动调用父类的构造函数，如果子类没有实现构造函数，则会继承父类的构造函数
 > 多继承：如果子类有自己实现的构造函数，同单继承，不会主动调用父类的构造函数，如果子类没有实现自己的构造函数，则会从父类中优先选择有构造函数的父类（__深度搜索__）
 
 判断实例与继承关系
-```Python
+```python
 s = son()
 # 判断实例
 isinstance(s, son)        # True
@@ -577,7 +617,7 @@ isinstance(obj, Class)    # 判断实例是否是某个类
 ### 12.6 新式类和经典类
 新式类：从object类继承的类，继承顺序广度优先
 经典类：不从object继承的类，继承顺序深度优先，不支持super
-```Python
+```python
 # 新式类
 class Parent(object):
     def __init__(self):
@@ -616,7 +656,7 @@ class Son(Parent):
 > Python在处理功能复用组织结构切分为模块,包和面向对象的类，其结构类似于C#/Java的命名空间，用于
 
 ### 13.1 引用模块
-```Python
+```python
 import math             # 引用math模块
 print math.sqrt(2)      # 正确输出
 print sqrt(2)           # 报错，未导入sqrt函数
@@ -649,7 +689,7 @@ print sqrt(2)
 
 ### 13.2 dir函数查看模块
 可以通过`dir`函数查看模块内定义的所有变量和函数
-```Python
+```python
 import math
 dir(math)
 ```
@@ -661,7 +701,7 @@ dir(math)
 * Python 默认安装路径中搜索
 
 可以通过`sys.path`查看所有目录
-```Python
+```python
 import sys
 sys.path
 ```
@@ -678,7 +718,7 @@ sound/                        Top-level package
             aiffread.py
 ```
 使用package方式与module类似
-```Python
+```python
 # 使用wavread需要引用sound.format
 import sound.format.wavread
 
@@ -688,7 +728,7 @@ from wavread import sound.format
 
 ### 13.5 `__init__.py`文件
 `__init__.py`文件可以包含一些包初始化的内容，可以定义默认导入的模块
-```Python
+```python
 __all__ = ["wavread", "wavwrite"]
 ```
 在使用`from sound.formats import *`的时候只会导入`wavread`, `wavwrite`两个模块，而不会导入`aiffread`模块
@@ -697,7 +737,7 @@ __all__ = ["wavread", "wavwrite"]
 *
 
 ### 13.6 包内引用
-```Python
+```python
 from . import echo                # 当前包同目录下的echo模块
 from .. import formats            # 当前包上级目录下的formats模块
 from ..filters import equalizer   # 当前包上级目录下的filters目录下的equalizer模块
@@ -706,7 +746,7 @@ from ..filters import equalizer   # 当前包上级目录下的filters目录下�
 
 ### 13.7 模块操作
 删除模块属性/函数
-```Python
+```python
 class test:
   a = 10
   def f(self, i):
@@ -726,7 +766,7 @@ Python算是动态语言，属性和函数即写即用，不需要提前定义�
 
 ## 14. 文档注释
 文档注释跟在相应的定义后面：函数定义，类定义，文件定义（文件头）
-```Python
+```python
 #!usr/bin/env Python
 """foo.py -- 模块注释"""
 
@@ -739,7 +779,7 @@ def printmsg(msg):
 ```
 
 可以通过help或`__doc__`访问注释内容
-```Python
+```python
 # 列出整个模块的所有注释
 help(foo)
 
@@ -749,7 +789,7 @@ Foo.__doc__
 
 ## 15. 异常
 Python的异常处理和其他语言类似:`try-except-finally`，抛出异常使用`raise`
-```Python
+```python
 try:
     raise Exception('spam', 'eggs')   # 手动抛出异常
 except Exception as inst:             # 设置异常实例别名，用于引用
@@ -765,7 +805,7 @@ finally:                              # 无论是否抛出异常，都会执行�
 
 ## 17. Python常用模块
 ### time
-```Python
+```python
 import time
 import datetime
 
@@ -782,11 +822,10 @@ print timespan.total_seconds()
 
 # 构造时间差
 timespan = datetime.timedelta(day=1)
-
 ```
 
 ### IO
-```Python
+```python
 # 打印到屏幕
 print 'hello world'
 
@@ -823,18 +862,30 @@ print os.getcwd()
 
 # 删目录
 os.rmdir('/Users/bomo/Downloads/newFolder')
-#
 ```
 
 ### 正则表达式
-```Python
+```python
 import re
 # 匹配从头匹配
-print(re.match('www', 'www.runoob.com').span())
+print(re.match(r'www', 'www.runoob.com').span())
 # 查找匹配
-print(re.search('www', 'www.runoob.com').span())
+print(re.search(r'www', 'www.runoob.com').span())
 # 替换
 print re.sub(pattern, replaceString, inputString)
 ```
 
-本文记录自己在学习过程中总结的一些Python要点，接触过Java，C#，OC，Python的语法确实简单优雅，很少多余的东西，人生苦短，Python是岸，哈哈哈
+match和search有第三个参数flag，`match(pattern, input, flag)`
+```python
+print(re.search(r'WWW', 'www.runoob.com', flags=re.I).string)
+```
+flag|用法
+-|------
+I|忽略大小写
+M|多行模式
+S|单选模式——点任意匹配模式
+L|使预定字符类 \w \W \b \B \s \S 取决于当前区域设定
+U|使预定字符类 \w \W \b \B \s \S \d \D 取决于unicode定义的字符属性
+X|详细模式。该模式下正则表达式可以是多行，忽略空白字符，并可以加入注释。
+
+本文记录自己在学习过程中总结的一些Python要点，接触过Java，C#，OC，Python的语法确实简单优雅，很少多余的东西，人生苦短，Python是岸

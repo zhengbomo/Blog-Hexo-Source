@@ -12,7 +12,7 @@ tags:
 
 ## 例子
 我们先来看一个例子，我们生成一个斐波那契序列
-```Python
+```python
 def fabs(count):
     n, a, b = 0, 0, 1
     while n < max:
@@ -23,7 +23,7 @@ def fabs(count):
 
 上面在函数里面直接print结果，显然这样做的复用性特别差，于是我们想到了用列表
 
-```Python
+```python
 def fabs(count):
     l = []
     n, a, b = 0, 0, 1
@@ -45,7 +45,7 @@ for i in fabs(10):
 * `__iter__`方法：返回一个迭代器
 
 给一个类实现迭代器功能，生成斐波那契序列
-```Python
+```python
 class Fabs(object):
     def __init__(self, max):
         """传入斐波那契数列的个数"""

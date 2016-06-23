@@ -10,7 +10,7 @@ Python从语法级别提供了对装饰器模式的支持，有时候需要为�
 
 <!-- more -->
 
-```Python
+```python
 def sayHello(name):
     print 'hello %s' % (name,)
 
@@ -33,7 +33,7 @@ f('bomo')
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-17/57647661.jpg)
 
 这样做还是很麻烦，Python提供了一种装饰器的语法，直接包装方法，而不改变原有的函数调用，我们在sayHello函数定义上加上`@log`
-```Python
+```python
 # 把log函数的定义放在sayHello之前
 @log
 def sayHello(name):
@@ -43,12 +43,12 @@ sayHello('bomo')
 ```
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-17/6205983.jpg)
 这里的`@log`的功能就相当于
-```Python
+```python
 sayHello = log(sayHello)
 ```
 
 Python的装饰器本质上就是函数调用，除了上面的方式，还支持三层嵌套，也支持参数，我们可以修改log函数为下面形式如下
-```Python
+```python
 def log(name):
     def wrapper2(func):
         # 定义一个转换器,接收任意参数最后传给func
@@ -63,12 +63,12 @@ def say_hello(name):
     print 'hello %s' % (name,)
 ```
 这时候就相当于
-```Python
+```python
 say_hello = log('timelog')(say_hello)
 ```
 
 装饰器是替换了原来的方法，所以使用装饰器后方法名也会变化，由上面代码可以看出
-```Python
+```python
 say_hello = log('timelog')(say_hello)
 # 相当于
 say_hello = wrapper2(say_hello)
@@ -79,7 +79,7 @@ say_hello = wrapper
 故`say_hello.__name__`为`wrapper`
 
 有时候我们可能会有些操作依赖于原来的方法名，这时候我们就不希望方法名被改了，或者是我们在使用装饰器后还能访问到原来函数的一些属性（函数也是对象，也有属性），Python提供了`functools.wraps`装饰器，用于把外部方法的相关属性赋值给内部方法，如
-```Python
+```python
 def log(func):
     # 定义一个转换器,接收任意参数最后传给func
     @functools.wraps(func)
@@ -101,7 +101,7 @@ def log(name):
 ```
 
 Python还只是同事声明几个装饰器，如
-```Python
+```python
 def log1(func):
     def wrapper(*args, **kv):
         print 'log1 begin %s' % (time.ctime(),)

@@ -17,39 +17,39 @@ updated: 2016-06-14 23:42:53
 
 ## thread模块
 使用`start_new_thread`方法开启一个线程，第一个参数为线程函数，第二个参数为参数，如果函数没有参数，要传空元组
-```Python
+```python
 import time
 import thread
 
 def test1():
     print 'start test1'
     # 休息3秒
-    time.sleep(3)      
+    time.sleep(3)
     print 'end test1'
 
 if __name__ == '__main__':
     thread.start_new_thread(test1, ())
     print 'main thread...'
     # start_new_thread创建的线程在主线程执行完成时会自动结束，这里等5秒
-    time.sleep(5)   
+    time.sleep(5)
     print 'main thread end'
 ```
 
 上面通过`sleep`防止主线程退出导致其他线程也跟着退出，显然不靠谱，这时候我们可以通过锁的方式控制线程执行顺序
-```Python
+```python
 lock = thread.allocate_lock()  # 返回一个新的锁定对象。
 lock.acquire()                 # 请求锁，如果该所没被占用，则成功返回，如果被占用，则等待直到锁被释放
 lock.release()                 # 释放锁
 ```
 例子：
-```Python
+```python
 import time
 import thread
 
 def test1(thread_lock):
     print 'start test1'
     # 休息3秒
-    time.sleep(3)      
+    time.sleep(3)
     print 'end test1'
     # 执行完后释放锁
     thread_lock.release()
@@ -69,8 +69,8 @@ if __name__ == '__main__':
 ```
 
 ## threading模块
-thread模块不支持守护线程，当主线程退出时，所有子线程不管是否工作都会被结束，而threading更强大，也支持守护线程  
-```Python
+thread模块不支持守护线程，当主线程退出时，所有子线程不管是否工作都会被结束，而threading更强大，也支持守护线程
+```python
 import time
 import threading
 
@@ -106,7 +106,7 @@ Thread对象
 * run(): 表示线程活动的方法
 
 当Thread对象调用start方法的时候，默认会调用run方法，所以我们可以封装线程函数到Thread对象里面，如下
-```Python
+```python
 import time
 import threading
 class MyThread(threading.Thread):
@@ -133,7 +133,7 @@ t.start()
 ### 1. Lock & RLock
 1. Lock
 指令锁，只有两种状态
-```Python
+```python
 mutex = threading.Lock()    # 构造方法
 mutex.acquire()             # 请求锁，成功则锁定，如果该锁已被锁定，则阻塞等待
 # mutex.acquire()           # 会发生死锁
@@ -142,17 +142,17 @@ mutex.release()             # 释放锁，使用前该锁必须已被锁定
 
 2. RLock
 可重入锁，为了保证线程对共享资源的独占，又避免死锁的出现，允许在`同一线程`中多次请求锁，如下：
-```Python
+```python
 mutex = threading.RLock()    # 构造方法
 mutex.acquire()              # 请求锁
 mutex.acquire()              # 请求锁，不会死锁
-mutex.release()             
+mutex.release()
 mutex.release()              # 请求多少次就要释放多少次，成对出现
 ```
 
 ### 2. Semaphore
 信号量，比Lock多了计数器，可以记录多次请求和释放，技术器不能小于0，小于0则会阻塞，通常可以用在控制并发数的情况下，用法与Lock类似
-```Python
+```python
 semaphore = threading.Semaphore(2)    # 构造一个信号量，容量为2
 semaphore.acquire()                   # 请求信号，计数器-1，执行完后为1
 semaphore.acquire()                   # 请求信号，计数器-1，执行完后为0
@@ -164,13 +164,13 @@ semaphore.release()                   # 请求信号，计数器+1，执行完�
 ### 3. Event
 与Lock相反，Event内部维护一个标志位，初始化为false，调用set置为true，调用clear置为flase
 
-```Python
+```python
 import time
 import threading
 
 def test1(signal):
     print "I will sleep, wake me up 3 seconds later"
-    signal.wait()       
+    signal.wait()
     print "I awake up..."
 
 if __name__ == '__main__':
@@ -193,7 +193,7 @@ Condition称为条件变量，提供了Python多线程中复杂的同步支持�
 
 
 下面使用Condition来模拟一个捉迷藏的游戏
-```Python
+```python
 import threading
 import time
 class Seeker(threading.Thread):
@@ -244,7 +244,7 @@ hider.start()
 
 ## 队列Queue
 多线程很多时候可以与队列一起使用，把任务放到队列，保证线程任务的执行顺序
-```Python
+```python
 import Queue
 myqueue = Queue.Queue(maxsize = 10) # 指定容量，不指定则无限大
 
@@ -254,7 +254,7 @@ myqueue.get(block=False)            # 取出队列中的第一个元素，如果
 ```
 可以利用Queue写一个线程安全的队列，如对数据库的操作可以放在一个队列里面进行，这样就可以省去线程同步带来的问题了
 
-```Python
+```python
 import threading
 import time
 import Queue
@@ -312,7 +312,7 @@ CPython编译器引入了GIL全局锁（进程）来解决多线程环境下的�
 1. CPU密集型:给一张图片创建1000张缩略图
 2. IO密集型:给一个文件进行重复的读写和删除1000次操作
 
-```Python
+```python
 import os
 import time
 import threading

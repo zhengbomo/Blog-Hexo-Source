@@ -149,7 +149,7 @@ class JokeDb(object):
                                   )
       '''
       cursor.execute(sql)
-      connect.commit()  
+      connect.commit()
       cursor.close()
 
   def insert_joke(self, joke):
