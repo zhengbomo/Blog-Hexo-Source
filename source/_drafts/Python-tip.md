@@ -2,7 +2,7 @@
 title: 《编写高质量代码 改善Python程序的91个建议》学习笔记
 date: 2016-06-22 11:16:46
 updated: 2016-06-22 11:16:46
-categories: Python
+categories: python
 tags:
 ---
 

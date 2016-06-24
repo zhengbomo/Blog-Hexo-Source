@@ -2,7 +2,7 @@
 title: Python装饰器
 date: 2016-06-17 16:32:35
 updated: 2016-06-17 16:32:35
-categories: Python
+categories: python
 tags: Python
 ---
 

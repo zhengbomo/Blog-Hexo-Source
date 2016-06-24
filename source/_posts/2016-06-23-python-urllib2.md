@@ -1,18 +1,19 @@
 ---
 title: python网络请求库urllib
-categories: Python
+categories: python
 tags: urllib
 date: 2016-06-23 15:21:59
 updated: 2016-06-23 15:21:59
 ---
-
 
 Python也提供了自带网络请求库有，urllib，urllib2
 * urllib          # 初级url请求库，提供最基本的url请求，header都不支持
 * urllib2         # 高级url请求库，通常与urllib库一起使用
 * cookielib       # Cookie容器处理
 
-## 1. Openner
+<!-- more -->
+
+## 1. Opener
 在Python中使用Opener对象来请求的url资源，使用`urlopen`方法则调用默认的opener请求
 ```python
 import urllib2
@@ -46,7 +47,10 @@ response = urllib2.urlopen(req, headers, headers=headers data=data)
 html = response.read()
 ```
 ## 3. Cookie
-Cookie处理相当于opener的一个handler，一个opener可以有多个handler，这里有点像Web请求管道，通过不同的handler处理做不同的处理，如可以通过自带的方法创建handler，如有urllib2.ProxyHandler，urllib2.HTTPRedirectHandler等
+Web请求相当于一条请求管道，在请求的过程中可以有多个操作，如缓存处理，Cookie处理，URL跳转处理，代理处理等等，在urllib2中被定义为handler，cookie处理相当于opener的一个handler，一个opener可以有多个handler，通过不同的handler处理做不同的处理，如可以通过自带的方法创建handler，如有urllib2.ProxyHandler，urllib2.HTTPRedirectHandler等
+
+
+Python中Cookie的基本使用如下
 ```python
 import urllib2
 import cookielib

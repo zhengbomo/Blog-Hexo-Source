@@ -1,6 +1,6 @@
 ---
 title: Python迭代器和生成器
-categories: Python
+categories: python
 date: 2016-06-21 14:55:49
 updated: 2016-06-21 14:55:49
 tags:

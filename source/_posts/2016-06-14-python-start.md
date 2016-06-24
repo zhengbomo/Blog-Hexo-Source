@@ -1,6 +1,6 @@
 ---
 title: Python学习笔记
-categories: Python
+categories: python
 tags:
   - Python
 date: 2016-06-14 20:01:29

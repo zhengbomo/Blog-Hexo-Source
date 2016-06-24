@@ -1,6 +1,6 @@
 ---
 title: Python多线程学习笔记
-categories: Python
+categories: python
 tags:
   - 多线程
   - Python
