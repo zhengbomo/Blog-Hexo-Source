@@ -2,7 +2,7 @@
 title: Python学习笔记
 categories: python
 tags:
-  - Python
+  - python
 date: 2016-06-14 20:01:29
 updated: 2016-06-14 20:01:29
 ---
