@@ -1,5 +1,5 @@
 ---
-title: Python学习笔记
+title: python学习笔记
 categories: python
 tags:
   - python
@@ -402,18 +402,18 @@ return result
 ```
 
 2. 字典推导式
-形式：`[key_expression: value_expression for value in tuple]` ，相当于
-```python
-result = {}
-for value in collection:
-    if condition:
-        result[key_expression] = value_expression
-return result
-```
-例如：
-```python
-{x+1: x**2 for x in (2, 4, 6, 8) if x <= 6}      # {3: 4, 5: 16, 7: 36}
-```
+形式：`{key_expression: value_expression for value in tuple}` ，相当于
+  ```python
+  result = {}
+  for value in collection:
+      if condition:
+          result[key_expression] = value_expression
+  return result
+  ```
+  例如：
+  ```python
+  {x+1: x**2 for x in (2, 4, 6, 8) if x <= 6}      # {3: 4, 5: 16, 7: 36}
+  ```
 
 ## 9. 无序集set
 ```python

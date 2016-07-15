@@ -10,8 +10,9 @@
     var duoshuoQuery = {short_name:"{{duoshuo_shortname}}"};
     (function() {
       var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
+      ds.type = 'text/javascript';
       ds.id = 'duoshuo-script';
+      ds.async = 'async';
       ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
       ds.charset = 'UTF-8';
       (document.getElementsByTagName('head')[0]

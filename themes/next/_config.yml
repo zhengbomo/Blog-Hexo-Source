@@ -281,7 +281,7 @@ duoshuo_info:
   ua_enable: true
   admin_enable: false
   user_id: 0
-  #admin_nickname: Author
+  admin_nickname: bomo
 
 
 # Facebook SDK Support.

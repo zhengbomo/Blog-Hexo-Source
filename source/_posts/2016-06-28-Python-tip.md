@@ -1,21 +1,18 @@
 ---
 title: 《编写高质量代码 改善Python程序的91个建议》学习笔记
-date: 2016-06-22 11:16:46
-updated: 2016-06-22 11:16:46
 categories: python
-tags:
+date: 2016-06-28 11:16:46
+updated: 2016-07-11 11:16:46
+tags: python
 ---
 
 最近在读《编写高质量代码 改善Python程序的91个建议》，在这里总结阅读中遇到的一些要点，和一些自己的理解
 
-## 1. 理解Pythonic
-什么是Pythonic，最直观的解释就是Python风格的代码，那什么是Python风格的代码，先来看一个有趣的彩蛋，我们在Python控制台输入`import this`，可以看到
+<!-- more -->
 
-```bash
-********:~ bomo$ python
-Python 2.7.11 (default, Jun 21 2016, 11:17:22)
-[GCC 4.2.1 Compatible Apple LLVM 7.3.0 (clang-703.0.31)] on darwin
-Type "help", "copyright", "credits" or "license" for more information.
+## 0. the Zen of Python
+先来看看一个有趣的彩蛋，python的设计之禅，我们在Python控制台输入`import this`，可以看到
+```python
 >>> import this
 The Zen of Python, by Tim Peters          # Python的禅宗
 
@@ -26,13 +23,13 @@ Complex is better than complicated.       # 复杂胜于凌乱
 Flat is better than nested.               # 扁平胜于嵌套
 Sparse is better than dense.              # 间隔胜于紧凑
 Readability counts.                       # 可读性很重要
-Special cases aren't special enough to break the rules.     # 特例并不违背规则
-Although practicality beats purity.                         # 虽然实用性比完美
+Special cases aren't special enough to break the rules.                     # 特例并不违背规则
+Although practicality beats purity.                                         # 虽然实用性比完美
 Errors should never pass silently.
-Unless explicitly silenced.                                 # 错误不应该被忽略，除非你明确要这样做
-In the face of ambiguity, refuse the temptation to guess.   # 在模棱两可的时候，拒绝胡乱猜测
+Unless explicitly silenced.                                                 # 错误不应该被忽略，除非你明确要这样做
+In the face of ambiguity, refuse the temptation to guess.                   # 在模棱两可的时候，拒绝胡乱猜测
 There should be one-- and preferably only one --obvious way to do it.       # 应该有一个，最后只有一个方式可以做到
-Although that way may not be obvious at first unless you're Dutch.      # 虽然好的方式可能不容易做到（但我心向之），除非你是Python之父
+Although that way may not be obvious at first unless you're Dutch.          # 虽然好的方式可能不容易做到（但我心向之），除非你是Python之父
 Now is better than never.                           # 立行胜于不做
 Although never is often better than *right* now.    # 不做胜于鲁莽
 If the implementation is hard to explain, it's a bad idea.
@@ -43,6 +40,8 @@ Namespaces are one honking great idea -- let's do more of those!    # 命名空�
 
 python的设计哲学可以归纳为两个单词：简单，易懂
 
+## 1. 理解Pythonic
+什么是Pythonic，最直观的解释就是Python风格的代码，那什么是Python风格的代码
 看看下面这个C语言的例子
 ```c
 for (i = 0; i < mylist_length; i++) {
@@ -56,6 +55,7 @@ while i < mylist_length:
    do_something(mylist[i])
    i += 1
 ```
+
 上面代码可以正确运行，但是并不被人为是Python的风格，我们稍作修改
 ```python
 for i in range(mylist_length):
@@ -103,13 +103,12 @@ a, b = b, a
 
 Pythonic是一种代码风格，以简单，易懂为宗旨
 
-参考：
-* [http://blog.startifact.com/posts/older/what-is-pythonic.html](http://blog.startifact.com/posts/older/what-is-pythonic.html)
+参考：[http://blog.startifact.com/posts/older/what-is-pythonic.html](http://blog.startifact.com/posts/older/what-is-pythonic.html)
 
 
 ## 2. 编写Pythonic代码
 * 变量名不与内建方法重名，如dict, list, element等，
-* 由于Python使用缩进识别代码块，所以在代码里面，多余的空格和Tab尽量不要随便使用，不推荐对齐等号的方式
+* 由于Python使用缩进识别代码块，所以在代码里面，多余的空格和Tab尽量不要随便使用，**不推荐**对齐等号的方式（下面方式）
   ```python
   a        = 10                 # some comment
   some_str = 'hello world'      # some comment
@@ -139,6 +138,7 @@ Pythonic是一种代码风格，以简单，易懂为宗旨
           IndexError: IndexError exception may raise in the function
       """
   ```
+
 * 函数设计
   * 函数长度不宜过长，通常以小于一屏为准
   * 函数嵌套不宜过多，通常保持在3层以内（for, if-else等）
@@ -166,10 +166,7 @@ class _const:
 
 import const
 const.COMPANY = 'Google'
-
-
 ```
-
 
 ## 4. 使用断言
 断言在其他很多语言都存在，可以方便用于测试和调试程序，使用断言格式如下
@@ -275,7 +272,6 @@ for index, i in zip(range(len(l)), l)
 for index, i in enumerate(l):
     do_something(i, index)
 ```
-
 推荐使用方式四，支持延迟加载，不会一次枚举出所有的值，性能最优，书写也简洁，enumerate不适用于dict对象
 
 ## 11. 分清is和==
@@ -298,8 +294,7 @@ print p1 == p2    # True
 ```
 
 ## 12. 尽量使用Unicode编码
-Python内建两种字符串类型：str和unicode
-//TODO:
+python编码见[这里](/2016-06-24/python-encode-decode/)
 
 ## 13. 多使用模块和包来管理文件
 * 尽量减少使用`from pack import *`这种导入方式，会污染命名空间，容易导致命名冲突，如果冲突，则后导入的覆盖先导入的
@@ -318,7 +313,7 @@ print +(+a)
 
 ## 15. 使用with自动释放资源
 用过C#的朋友应该都知道using，可以在代码块结束后自动释放资源，而Python也支持类似的语法
-```
+```python
 import io
 f = open('test.txt', 'r')
 print f.read()
@@ -328,12 +323,9 @@ f.close()
 ```python
 with open('test.txt', 'r') as f:
     print f.read()
-
 # 离开代码块后，f会自动释放
 ```
 无论代码块中是否会抛出异常，离开代码块的时候，资源f都会被释放，其实只需要实现`__enter__`和`__exit__`方法就能支持这种行为
-
-
 ```python
 class MyObj(object):
     def open(self):
@@ -364,5 +356,4 @@ with obj.open() as v:
 # Nonedo something
 # close
 # 没有异常
-
 ```
