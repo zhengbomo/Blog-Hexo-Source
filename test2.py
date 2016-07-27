@@ -1,5 +1,0 @@
-#!/usr/bin/python
-# -*- coding: gbk -*-
-
-s1 = 'жпнд'
-print s1
