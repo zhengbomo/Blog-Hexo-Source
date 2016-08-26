@@ -6,6 +6,18 @@ categories:
 tags:
 ---
 
+python模仿世界名画
+
+安装[cuda](https://developer.nvidia.com/cuda-toolkit-archive)
+安装numpy
+
+
+
+
+
+
+
+
 python实战-爬取糗事百科
 在掌握了python的基础之后，我们可以来练习一些简单的实战操作，下面演示如何爬取糗事百科最热门的100条段子中，并找出最好笑的10条段子
 
