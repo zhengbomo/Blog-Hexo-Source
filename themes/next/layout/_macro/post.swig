@@ -196,6 +196,29 @@
       {% endif %}
     </div>
 
+    {% if page.comments %}
+    <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    	<div>我知道是不会有人点的，但万一有人想不开呢？！</div>
+    	<button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    	  <span>赏</span>
+    	</button>
+    	<div id="QR" style="display: none;">
+
+    	    <div id="wechat" style="display: inline-block">
+    	      <a href="/images/wechat.jpg" class="fancybox" rel="group"><img id="wechat_qr" src="/images/wechat.jpg" alt="bomo	 WeChat Pay"></a>
+    	      <p>微信打赏</p>
+    	    </div>
+
+
+    	    <div id="alipay" style="display: inline-block">
+    	      <a href="/images/alipay.jpg" class="fancybox" rel="group"><img id="alipay_qr" src="/images/alipay.jpg" alt="bomo alipay"></a>
+    	      <p>支付宝打赏</p>
+    	    </div>
+
+    	</div>
+    </div>
+    {% endif %}
+
     <footer class="post-footer">
       {% if post.tags and post.tags.length and not is_index %}
         <div class="post-tags">
