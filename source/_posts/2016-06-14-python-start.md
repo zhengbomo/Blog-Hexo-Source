@@ -737,12 +737,12 @@ __all__ = ["wavread", "wavwrite"]
 *
 
 ### 13.6 包内引用
+只有包才能引用包，纯目录不能互相引用，所以只有目录下有`__init__.py`文件才能被其他目录的模块引用
 ```python
 from . import echo                # 当前包同目录下的echo模块
 from .. import formats            # 当前包上级目录下的formats模块
 from ..filters import equalizer   # 当前包上级目录下的filters目录下的equalizer模块
 ```
-
 
 ### 13.7 模块操作
 删除模块属性/函数

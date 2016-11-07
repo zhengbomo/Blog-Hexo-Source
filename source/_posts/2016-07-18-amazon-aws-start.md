@@ -37,9 +37,50 @@ tags: [VPS]
   ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-7-28/57044390.jpg)
 6. 这个时候需要用秘钥与服务器配对连接
   * 进入终端修改秘钥文件的权限：chmod 400 xxx.pem
-  * 默认用户为`ubuntu`，连接公网服务器：ssh -i xxx.pem ubuntu@[公网ip]（如：ssh -i ABC.pem ubuntu@52.37.222.96），以后也是通过这个连接的
+  * 默认用户为`ubuntu`，连接公网服务器：ssh -i xxx.pem ubuntu@[公网ip]（如：ssh -i "ABC.pem" ubuntu@52.39.168.235），以后也是通过这个连接的
   * ok，连接成功
   * 接下来就可以对服务器进行操作了
   ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-7-28/4340751.jpg)
 
   如果是windows下默认不支持`ssh`登陆，需要安装`PuTTY`，详情参见[这里](https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/putty.html?icmpid=docs_ec2_console)
+
+## 三、固定IP
+默认情况下，服务器每次重启的的时候，IP可能会更变，我们在后台控制面板申请一个新的公网地址
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/22826182.jpg)
+
+然后绑定到实例上，因为我这里已经绑定了，所以是解除关联
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/8236634.jpg)
+
+这样在每次重启的的时候ip就不会变了
+
+## 四、设置安全组
+默认情况下服务器只能通过ssh访问，如果我们配置了web服务器，默认情况下是不能通过ip访问的，需要在安全组中添加入站规则，在后台找到实例对应的安全组
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/50658203.jpg)
+
+找到添加入站规则（如：http）
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/24114515.jpg)
+这样就可以通过http访问了，下面我们安装nginx测试一下
+```bash
+$ sudo add-apt-repository ppa:nginx/stable
+$ sudo apt-get update && sudo apt-get upgrade
+$ sudo apt-get install nginx
+```
+启动nginx
+```bash
+$ sudo /etc/init.d/nginx start
+start: Job is already running: nginx
+```
+这个时候我们就可以通过ip访问了
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/55317071.jpg)
+
+## 五、绑定域名
+有了固定ip绑定域名就很简单了，在dns域名解析服务器(如[dnspod](https://www.dnspod.cn/))添加一个A记录即可
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-3/17503114.jpg)
+接下来就可以用域名访问了（可能有延迟）
+
+## 六、iTerm快捷连接
+iTerm基本上是Mac上必备的终端工具，功能比自带的终端强大的多，这里使用其中一个技巧来实现快速连接和登录服务器，打开iTerm配置（Cmd+,）添加Profile
+
+![](http://7xqzvt.com1.z0.glb.clouddn.com/16-9-6/79653608.jpg)
+
+添加完后，通过快捷键（Cmd+o）打开profile列表，然后选择就可以自动打开新窗口执行了，特别方便

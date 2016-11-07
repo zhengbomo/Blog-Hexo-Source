@@ -12,6 +12,12 @@ updated: 2016-07-28 12:20:48
 
 <!-- more -->
 
+## 升级apt-get源
+```bash
+$ sudo apt-get update
+$ sudo apt-get upgrade
+```
+
 ## 升级python
 先看一下ubuntu自带的python的版本
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-7-28/56975859.jpg)
@@ -104,6 +110,14 @@ $ sudo ln -s /usr/local/lib/python2.7.12/bin/easy_install /usr/bin/easy_install
 $ sudo pip install virtualenv
 ```
 
+## 安装flask
+```
+# flask依赖ssl库，需要先安装下面两个工具
+$ sudo apt-get install openssl
+$ sudo apt-get install libssl-dev
+
+$ sudo pip install flask
+```
 
 ## 安装mysql
 使用下面命令检查是否安装过，如果没有任何输出，说明没有安装
@@ -134,11 +148,36 @@ CREATE DATABASE IF NOT EXISTS TestDb DEFAULT CHARSET utf8 COLLATE utf8_general_c
 ```
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-7-28/44504183.jpg)
 
-## 安装mysql for python
+
+查看所有数据库
+```bash
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| TestDb             |
+| mysql              |
+| performance_schema |
++--------------------+
+```
+
+使用数据库
+```bash
+mysql> use TestDb
+Database changed
+```
+
+## 安装MySQL-python库
 ```bash
 $ sudo pip install MySQL-python
 ```
+使用
+```python
+import MySQLdb
 
+conn = MySQLdb.connect(host="127.0.0.1", user="root", passwd="111111", db="PaiPaiDai", charset="utf8")
+```
 
 > 如果没有安装`libmysqlclient-dev`，安装过程中可能会出现下面错误
 ```bash
@@ -185,8 +224,73 @@ $ sudo pip install scrapy
 入门教程：[https://scrapy-chs.readthedocs.io/zh_CN/0.24/intro/tutorial.html](https://scrapy-chs.readthedocs.io/zh_CN/0.24/intro/tutorial.html)
 
 ## 安装requests库
-让你从痛苦的urllib中解脱
+让你从痛苦的`urllib`中解脱
 ```bash
 $ sudo pip install requests
 ```
 详细介绍：[http://cn.python-requests.org/zh_CN/latest/](http://cn.python-requests.org/zh_CN/latest/)
+
+## 安装git
+```bash
+$ sudo apt-get install git
+```
+
+## 安装nginx
+```bash
+# 添加Nginx库到apt-get source中
+$ sudo add-apt-repository ppa:nginx/stable
+# 更新apt源
+$ sudo apt-get update && sudo apt-get upgrade
+# 安装nginx
+$ sudo apt-get install nginx
+```
+
+启动
+```bash
+$ sudo /etc/init.d/nginx start
+start: Job is already running: nginx
+```
+
+启动后可以通过ip可以正常访问
+![nginx](http://7xqzvt.com1.z0.glb.clouddn.com/16-11-1/68380067.jpg)
+
+## ubuntu使用技巧
+### 1. vim退出不保存
+有时候使用vim编辑系统文件的时候，由于没有权限无法保存，又无法退出，只用`:q!`可以不保存退出
+
+### 2. 开启crontab日志
+默认定时任务crontab是不开启日志的，需要修改`/etc/rsyslog.d/50-default.conf`并将下面一行的前面的注释`#`去掉（编辑的时候需要`sudo`权限）
+```conf
+# cron.*                          /var/log/cron.log
+```
+然后重启`rsyslog`和`cron`服务
+```bash
+$ service rsyslog restart;
+$ service cron restart;
+```
+
+
+
+<!-- ##
+
+
+pip install MySQL-python
+pip install Flask
+pip install uwsgi
+
+
+使用apt-get安装Nginx的话，我们需要添加Nginx库到apt-get source中
+sudo add-apt-repository ppa:nginx/stable
+
+
+升级已有的包，确保系统上有uWSGI所需的编译器和工具：
+
+```bash
+$ sudo apt-get update && sudo apt-get upgrade
+$ sudo apt-get install build-essential python python-dev
+```
+
+
+安装Yum
+$ sudo apt-get yum
+$ yum -y install vixie-cron -->

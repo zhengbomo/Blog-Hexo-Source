@@ -29,7 +29,7 @@ $ virtualenv envname  # 创建一个新的隔离环境，会安装Installing set
 $ cd envname
 ```
 
-### 常见命令参数
+### 1. 常见命令参数
 * `--system-site-packages`: 使用系统的全局的python库
 * `--no-site-packages`: 不使用系统的全局的python库（默认）(废弃)
 * `--download`: 从网上下载包预安装的包
@@ -38,7 +38,7 @@ $ cd envname
 更多参数见官网说明：[https://virtualenv.pypa.io/en/stable/reference/#cmdoption--system-site-packages](https://virtualenv.pypa.io/en/stable/reference/#cmdoption--system-site-packages)
 
 
-### 我们查看一下有哪些文件
+### 2. 我们查看一下有哪些文件
 ```bash
 $ ls
 bin  include  lib  pip-selfcheck.json
@@ -56,7 +56,7 @@ python2.7
 ```
 文件与python安装目录下的文件类似，即独立环境所使用的package和一些可执行程序
 
-### 激活
+### 3. 激活并进入虚拟环境
 使用下面命令激活当前的环境（这里用的是mac），之后使用的python环境就是刚创建的虚拟环境，命令行前面会带虚拟环境的名字：`(envname)`
 ```bash
 $ source bin/activate
@@ -86,13 +86,27 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>
 ```
 
+### 4. 退出虚拟环境
 使用完成之后通过`deactivate`命令退出虚拟环境，前面的虚拟环境名`(envname)`没有了，说明退出了
 ```bash
 (envname) localhost:envname zhengxiankai$ deactivate
 localhost:envname zhengxiankai$
 ```
 
-## 三、与Pycharm结合
+## 三、批量安装package
+pip工具支持批量安装package，只需要把需要的包按照格式写在文件中，就可以自动安装，同时也支持导出，下面是从当前环境（envname）导出所有安装的包的配置到`requirements.txt`文件中
+```
+$ pip freeze > requirements.txt
+```
+
+批量安装`requirements.txt`文件中的所有包
+```bash
+$ pip install -r requirements.txt
+```
+这样在切换环境的时候安装依赖包就很方便了，不需要一个一个安装了
+
+
+## 四、与Pycharm结合
 Pycharm是python最常用的开发工具，当然也提供了virtualenv的支持，到设置里面的`Project Interpreter`添加本地已经存在的虚拟环境，也可以直接创建，然后应用到工程即可
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/001.png)
 

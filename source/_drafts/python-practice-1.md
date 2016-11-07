@@ -7,9 +7,9 @@ tags:
 ---
 
 python模仿世界名画
-
-安装[cuda](https://developer.nvidia.com/cuda-toolkit-archive)
+1. 安装[cuda](https://developer.nvidia.com/cuda-toolkit-archive)
 安装numpy
+
 
 
 
