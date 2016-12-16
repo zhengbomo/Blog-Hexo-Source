@@ -2,21 +2,26 @@
 title: swift学习笔记
 categories: iOS
 date: 2016-06-28 15:00:04
-updated: 2016-06-28 15:00:04
+updated: 2016-12-16 15:00:04
 tags: swift
 ---
 
 一直没有时间好好看一下swift，最近复习了一遍语法，这里记录swift学习过程中遇到的一些问题和要点，和Object-C的一些相关特性这里也不做介绍，只记录swift特有的一些特性
-
-swift借鉴了很多语言的语法，特别是脚本语言，在swift里，可以看到python语言的一些影子，很多地方是借鉴了python的一些用法
+swift借鉴了很多语言的语法，特别是脚本语言，在swift里，可以看到python语言的一些影子，还有其他编程语言的影子
 
 <!-- more -->
-
 
 ## 一、基础语法
 * swift语句结束不需要分号（写了也没有问题），有一种情况需要分号，如果一行代码中有多条语句，这时候就必须要分号隔开
 * swift字符串，数组语法糖，字典语法糖不需要`@`标示
-* swift是类型安全的语言，具有强大的类型推测，所以很多时候我们不需要声明类型
+* swift是类型安全的语言，所有的类型都不会自动转换（如：Int和UInt类型不能直接运算），同事swift具有强大的类型推测，所以很多时候我们不需要声明类型
+* swift的多行注释支持嵌套
+  ```swift
+  /* 这是第一个多行注释的开头
+  /* 这是第二个被嵌套的多行注释 */
+  这是第一个多行注释的结尾 */
+  ```
+* swift的布尔值使用小写true和false，判断语句只能使用Bool类型
 
 ## 二、数据类型
 * 与objc一样，swift支持以前（objc）使用的所有数据类型，swift的类型名字首字母大写，如Int, Float, NSInteger
@@ -30,20 +35,26 @@ swift借鉴了很多语言的语法，特别是脚本语言，在swift里，可�
   ```swift
   let oneMillion = 1_000_000
   ```
-* swift数值类型进行运算符计算的时候不会自动进行类型转换
+* swift数值类型进行运算符计算的时候不会自动进行类型转换，通常可以通过类型的构造方法进行类型转换
   ```swift
   var a: Int = 12
   var b: Float = 23
-  var c = a + b         // 报错
+  var c = a + b           // 报错
+  var d = Float(a) + b    // 正确
   ```
 * swift的基础数据类型与对象类型一视同仁，可以混用，不需要装箱和拆箱
 
+
+### TODO：Any, AnyObject,
+
 ## 三、常量变量
-* 与`C/Obj-C`不同，swift的常量更为广义，支持**任意类型**
+* 与`C/Obj-C`不同，swift的常量更为广义，支持__任意类型__，常量只能赋值一次
 * swift的变量和常量在声明的时候类型就已经确定（由编译器自动识别或开发者指定）
+* 使用let声明的集合为可变集合，使用var声明的集合为不可变集合
+* 如果你的代码中有不需要改变的值，请使用 let 关键字将它声明为常量。只将需要改变的值声明为变量。这样可以尽量数据安全，并且常量是线程安全
 
 ```swift
-// 常量：使用let声明
+// 常量：使用let声明，赋值后就不能再修改
 let a = NSMutableArray()
 let b = 12
 let c: Float = 12       // 类型标注(type annotation)
@@ -57,9 +68,27 @@ var f: Double? = 12
 var g = "hello world"
 ```
 
+### 类型标注
+在声明变量和常量的时候可以如果可以由编译器自动识别，可以不用制定类型，如下
+```swift
+let a = 12    //常量a会编译为Int类型
+var b = 1.3   //变量b会编译为Double类型
+```
+我们也可以指定类型
+```swift
+let a: Double = 12
+let b: Float = 1.3
+```
+可以在一行声明多个变量/常量，在最后一个声明类型
+```swift
+var red, green, blue: UInt
+```
+
+
+
 ## 四、序列和集合
 ### 1. 数组Array
-swift的数组可以是有类型的（通过泛型），存放同类型的数据，如果添加一个错误的类型会报编译错误，默认情况下编译器会自动识别
+swift的数组可以是有类型的（泛型），存放同类型的数据，如果添加一个错误的类型会报编译错误，默认情况下编译器会自动识别
 ```swift
 //1. 数组的写法为：Array<Int>，也可以简写成[Int]
 //2. 数组初始化与NSArray类似，直接用中括号括起来，里面值用逗号隔开
@@ -92,7 +121,7 @@ array6[1...3] = [2, 3, 4]           // [1, 2, 3, 4, 9]
 array6[0...2] = array6[1...3]       // [2, 3, 4, 4, 9]
 
 // 8. 迭代数组的时候，如果需要索引，可以用enumerate方法
-for (index, value) in array4.enumerate() {
+for (index, value) in array4.enumerated() {
     //do something
 }
 ```
@@ -105,19 +134,23 @@ var dict1 = ["key1": 1, "key2": 2, "key3": 3]
 
 // 2. 声明方式
 var dict2: Dictionary<String, Int> = dict1        //dict2与dict1不是一个对象
-var dict3: [String: Int] = dict1
+var dict3: [String: Int] = dict1                  //通常采用这种方式声明类型
 
 
 // 3. 不声明类型，编译器又无法识别，则为NSDictionary
 var dict4 = [:]
+var dict5: [Int: String] = [:]
 
-// 4. 修改dict
+// 4. 修改或添加键值对
 dict1["key3"] = 4
 
-// 5. key不存在不报错，返回可空类型nil
+// 5. 删除键
+dict1["key3"] = nil
+
+// 6. key不存在不报错，返回可空类型nil
 let value4 = dict1["key4"]
 
-// 6. 字典迭代返回key/value元组
+// 7. 字典迭代返回key/value元组，类似python
 for (key, value) in dict1 {
     print("\(key) = \(value)")
 }
@@ -126,7 +159,42 @@ for (key, value) in dict1 {
 > 数组（Array）或字典（Dictionary），如果声明为变量（var），则为可变，如果为常量（let），则为不可变
 > 常量数组或字典编译器会对其进行优化，所以尽量把不可变的数组定义为常量数组
 
-### 3. 元组Tuple
+### 3. Set
+Set集合用于存放无序不重复的对象，用法与数组类似，重复的项会被忽略
+```swift
+var s: Set<Int> = [1, 3, 5, 6, 7, 4, 3, 7]    // [1, 3, 4, 5, 6, 7]
+s.count
+s.isEmpty
+s.insert(3)
+s.remove(3)
+s.contains(3)
+```
+集合操作
+```swift
+let oddDigits: Set = [1, 3, 5, 7, 9]
+let evenDigits: Set = [0, 2, 4, 6, 8]
+let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]
+
+//合操作
+oddDigits.union(evenDigits).sort()                // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+//交操作
+oddDigits.intersection(evenDigits).sorted()       // []
+
+//减操作
+oddDigits.subtracting(singleDigitPrimeNumbers).sorted()           // [1, 9]
+
+//不重叠集合
+oddDigits.symmetricDifference(singleDigitPrimeNumbers).sorted()   // [1, 2, 9]
+```
+
+* 使用“是否相等”运算符( == )来判断两个 合是否包含全部相同的值。
+* 使用 isSubset(of:) 方法来判断一个 合中的值是否也被包含在另外一个 合中。
+* 使用 isSuperset(of:) 方法来判断一个 合中包含另一个 合中所有的值。
+* 使用 isStrictSubset(of:) 或者 isStrictSuperset(of:) 方法来判断一个 合是否是另外一个 合的子 合或 者父 合并且两个 合并不相等。
+* 使用 isDisjoint(with:) 方法来判断两个 合是否不含有相同的值(是否没有交 )
+
+### 4. 元组Tuple
 与python类似，swift也支持元组，可以很方便的使用元组包装多个值，也使得函数返回多个值变得更加方便，特别是临时组建值得时候
 * 支持任意类型
 * 支持同时赋值
@@ -143,7 +211,7 @@ let (x, y) = point
 print(x)      // 100
 print(y)      // 50
 
-// 3. 取元组元素
+// 3. 使用下标取元组元素，下标从0开始
 print(httpError1.0)      // 404
 print(httpError1.1)      // Not Found
 
@@ -155,12 +223,13 @@ print(httpError2.errorMessage)       // Not Found
 // 5. 可以用下划线表示忽略部分值
 let (a, _) = point
 ```
+> 元组在临时组织值得时候很有用，可以不用重新定义数据结构
 
-### 4. 字符串String
-swift字符串是由Character字符组成的集合，支持`+`操作符，可以与NSString无缝桥接
-字符串是值类型（与Int, Float）一样，在传值的时候都会进行拷贝，当然这回带来一定的性能损耗，*swift编译器在编译的时候会进行优化，保证只在必要的情况下才进行拷贝*
+### 5. 字符串String
+swift字符串是由Character字符组成的集合，支持`+`操作符，可以与NSString无缝桥接，swift的字符串完全兼容unicode
+字符串与值类型（与Int, Float）一样，是值类型，在传值的时候都会进行拷贝，当然这回带来一定的性能损耗，*swift编译器在编译的时候会进行优化，保证只在必要的情况下才进行拷贝*
 ```swift
-// 1. 与NSString不同，声明不需要@前缀
+// 1. 与NSString不同，声明不需要@前缀，支持转移字符
 let name1 = "bomo\n"
 
 // 2. 空串（下面两种方式等价）
@@ -172,12 +241,11 @@ let character1: Character = "!"
 
 // 4. 常见属性，方法
 name1.isEmpty                   // 判空
-name1.characters.count          // 字符数
+name1.characters.count          // 获取字符串的字符数
 name1.uppercaseString
 name1.lowercaseString
 name1.hasPrefix("bo")
 name1.hasSuffix("mo")
-
 
 // 5. 加法运算
 let hello = "hello " + name1   // hello bomo\n
@@ -186,7 +254,7 @@ let hello = "hello " + name1   // hello bomo\n
 let name4 = "b" + "omo\n"
 name4 == name1                 // True
 
-// 7. 字符串插值
+// 7. 字符串插值（使用反斜杠和括号站位）
 let city = "广州"
 let hello2 = "I'm \(name1) from \(city)"
 
@@ -196,7 +264,7 @@ var s = String(format: "%.2f", f)     //123.32
 ```
 
 
-### 5. 集合的赋值和拷贝行为
+### 6. 集合的赋值和拷贝行为
 swift的集合通常有Array和Dictionary，他们在赋值或传递的时候，行为上有所不同，字典类型Dictionary或数组类型Array在赋值给变量或常量的时候，只要有做修改，就会进行值拷贝，并且不会作用到原来变量上
 ```swift
 var dict1 = ["a": 1, "b": 2]
@@ -216,7 +284,7 @@ print(arr1 == arr2)           // false
 当数组或字典作为参数传递给函数的时候，由于在Swift3中不推荐使用变量参数，故所有函数参数不可变，故也不进行拷贝
 
 ## 五、可选类型（可空类型）
-swift加入了可空类型让我们使用数据的时候更为安全，我们需要在可空的地方使用可选类型声明该变量可为空，不能给非可选类型设值`nil`值
+swift加入了可空类型让我们使用数据的时候更为安全，我们需要在可空的地方使用可选类型声明该变量可为空，不能给非可选类型设值`nil`值，在使用的时候可以明确的知道对象是否可能为nil，有点像ObjC的对象，对象可以为nil，也可以不为nil，而swift得可选类型范围更广可以作用于任何类型（基础类型，类，结构体，枚举）
 
 ### 1. 声明
 ```swift
@@ -237,10 +305,7 @@ func getdog() -> String? {
     return "wangcai"
 }
 
-// 5. 假定我们通过getdog方法返回的值一定不为空
-var dog: String? = getdog()
-
-// 6. 不能把可选类型赋值给非可选类型，下面会报错
+// 5. 不能把可选类型赋值给非可选类型，下面会报错
 let cat: String = dog
 ```
 
@@ -278,6 +343,18 @@ if let number = i where i > 10 {
     print("i不为空且大于10 \(number)")
 } else {
     print("nil")
+}
+```
+可选绑定还支持多个绑定，不许所有的绑定都满足才返回true
+```swift
+if let firstNumber = 1, let secondNumber = 2)
+}
+// 输出 "4 < 42 < 100"
+ if let firstNumber = Int("4") {
+     if let secondNumber = Int("42") {
+         if firstNumber < secondNumber && secondNumber < 100 {
+             print("\(firstNumber) < \(secondNumber) < 100")
+} }
 }
 ```
 
@@ -339,11 +416,18 @@ var colorNameToUse = userDefinedColorName ?? defaultColorName
 * 返回值colorNameToUse的类型同`??`的第二个操作数的类型，为`String`
 
 
-
-
 ## 六、运算符
 swift运算符在原有的基础上做了一些改进，还添加了一下更高级的用法，还有新的运算符
 * `=`运算符不返回值
+* 符合运算符`+=`, `-=`等不返回值
+  ```swift
+  //下面语句会报错
+  let b = a *= 2
+  ```
+* 比较运算符可以用于元组的比较（逐个比较，如果遇到不等的元素，则返回，默认最多只能比较7个元素的元组，超过则需要自定义）
+  ```swift
+  (1, "zebra") < (2, "apple")     // true，因为 1 小于 2
+  ```
 * 字符串String，字符Character支持`+`运算符
 * 浮点数支持`%`求余运算
   ```swift
@@ -352,13 +436,15 @@ swift运算符在原有的基础上做了一些改进，还添加了一下更高
 * `++/--`运算在swift3被抛弃，用`+=/-=`代替
 * 支持溢出运算符（`&+`, `&-`, `&*`），可以在溢出时进行(高位)截断
 * 支持位运算符（`>>`, `<<`）
+* 支持三目运算符（`a ? b : c`）
+* 支持逻辑运算符（`&&`, `||`, `!`）
 * 与其他高级语言类似，swift运算符支持重载，可以为类添加自定义的运算符逻辑，后面会讲到
 * `!=`, `==`, `===`, `!==`（恒等于/不恒等于）
       `===`：这两个操作符用于引用类型，用于判断两个对象是否指向同一地址
       `!===`：与`===`相反，表示两个变量/常量指向的的地址不同
       `==`：表示两个对象逻辑相等，可以通过重载运算符实现相等的逻辑，两个值相等的对象可以是不同地址的对象
       `!=`：与`==`相反，表示两个对象逻辑不等
-* 范围运算符
+* 区间运算符
     可以使用`a...b`表示一个范围，有点类似于Python的`range(a, b)`
     ```swift
     for i in 1...5 {
@@ -375,18 +461,25 @@ swift运算符在原有的基础上做了一些改进，还添加了一下更高
     let az = "a"..."z"      // 返回的是CloseInteval或HalfOpenInterval
     az.contains("e")        // True
     ```
-* 可选关联运算符`??`
+* 空合运算符`??`（与C#类似）
     对于可选类型取值，如果不为空则返回该值，如果为空则去第二个操作数
+    ```swift
+    let result = a ?? b
+    ```
 
 ## 七、流程控制
 swift使用三种语句控制流程：`for-in`、`for`、`switch-case`、`while`和`repeat-while`，且判断条件的括号可以省略
 ```swift
-if a > b {
-    print(a)
-} else {
-    print(b)
+let names = ["Anna", "Alex", "Brian", "Jack"]
+for name in names {
+    print("Hello, \(name)!")
 }
+
+//如果不需要使用到迭代的值，使用下划线`_`忽略该值
+for _ in 1...10
+    print("hello")
 ```
+
 流程控制语句的条件返回值必须是Bool，下面会报错
 ```swift
 var dd: Bool? = true
@@ -402,10 +495,16 @@ if let ee = dd {
 }
 ```
 
-在Swift2.0以后，不支持`do-while`语句，使用`repeat-while`代替，用法与do-while一样
+在Swift2.0以后，不支持`do-while`语句，使用`repeat-while`代替，用法与`do-while`一样
+```swift
+repeat {  
+    print("repeat while : \(j)")  
+    j++  
+} while j < 3
+```
 
 ### guard-else
-guard翻译为保镖模式，在执行操作前，进行检查，如果不符合，则拦截，使用方式与if有些类似，如果与let结合使用，可以对可选类型解包，先看看普通的`if-else`模式
+翻译为保镖模式，在执行操作前，进行检查，如果不符合，则拦截，使用方式与if有些类似，如果与let结合使用，可以对可选类型解包，先看看普通的`if-else`模式
 ```swift
 func test(i: Int?) {
     if let i = i where i > 0 {
@@ -429,6 +528,7 @@ func test(i: Int?) {
     print(i)
 }
 ```
+保镖模式可以避免代码中过多的流程判断代码导致过多的代码块嵌套，增强可读性
 > 保镖模式`guard-else`内的代码块必须包含`break`, `return`等跳出代码块的关键字
 
 ### switch-case
@@ -437,7 +537,7 @@ func test(i: Int?) {
 * case可以支持区间（`a...b`），支持元组，区间可以嵌套在元组内使用
 * case多条语句不需要用大括号包起来
 * case语句不需要break，除了空语句，如果需要执行下面的case，可以使用`fallthrough`
-* 如果case不能命中所有的情况，必须要default，如Int，String类型
+* 如果case不能命中所有的情况，必须要`default`，如Int，String类型，否则编译会失败
 * 可以用`fallthrough`关键字声明接着执行下一条case语句，注意，如果case语句有赋值语句（`let`），则`fallthrough`无效
 
 ```swift
@@ -458,7 +558,7 @@ case HttpStatus.ServerError, HttpStatus.NetworkError:
 
 case .Redirect:             // 如果编译器可以识别出枚举类型，可以省略枚举名
     print ("redirect")
-fallthrough             //继续执行下一条case
+    fallthrough             // 像C语言一样，继续执行下一条case
 case HttpStatus.Success:
     print("success")
 }
@@ -467,13 +567,13 @@ case HttpStatus.Success:
 let request = (0, "https://baidu.com")
 switch request {
 case (0, let a):                  // 支持绑定
-    a
+    print(a)
 case let (a, b) where a == 1:      // 绑定可以卸载元组外面，支持where判断
-    "cancel \(b)"
+    print("cancel \(b)")
 case (2...10, _):                 // 支持区间，支持忽略值
-    "error"
+    print("error")
 default:
-    "unknown"
+    print("unknown")
 }
 
 // case可以与where进行进一步判断
@@ -495,6 +595,32 @@ if case (1...20, let cc) = bb where cc == "bomo" {
     print(cc)
 } else {
     print("nil")
+}
+```
+
+### 带标签的语句
+如果有多层嵌套的情况下，有时候我们需要在某处直接退出多层循环，在objc下并没有比较好的方式实现，需要添加退出标识，然后一层一层退出，而在swift可以很方便的退出多层循环，首先需要使用标签标识不通的循环体，形式如下
+```swift
+labelName : while condition { statements }
+```
+
+看下面例子
+```swift
+outerLoop1 : for i in 1...10 {
+    outerLoop2 : for j in 1...10 {
+        outerLoop3 : for k in 1...10 {
+            if j > 5 {
+                // 1. 跳出一层循环（默认）继续outerLoop2的循环
+                break
+
+                // 2. 跳出两层循环，继续outerLoop1的循环
+                // break outerLoop2
+
+                // 3. 跳出三层循环，退出整个循环，继续后面的语句
+                // break outerLoop1
+            }
+        }
+    }
 }
 ```
 
@@ -526,7 +652,7 @@ func add(a: Int, b: Int) -> Int {
 // 调用
 add(12, b: 232)
 ```
-函数调用除了第一个参数，后面所有的参数必须带上参数名，符合Objc的函数命名规则，如果是调用构造器，第一个参数也需要显示声明
+函数调用除了第一个参数，后面所有的参数必须带上参数名（符合Objc的函数命名规则）如果是调用构造器，第一个参数也需要显示声明
 ```swift
 class A {
     var name: String
@@ -568,7 +694,7 @@ func add(first a: Int, second b: Int) -> Int {
 // 调用
 add(first: 10, second: 20)
 ```
-如果函数在第一个参数定义外部参数名，必须显示指定，当然我们还可以通过`_`符号让函数忽略参数名
+如果函数在第一个参数定义外部参数名，必须显示指定，当然我们还可以通过下划线`_`让函数忽略参数名
 ```swift
 func add(a: Int, _ b: Int) -> Int {
     return a + b
@@ -589,7 +715,6 @@ log("success", isDebug: false)
 ```
 如果使用默认值并且默认值不是出现在最后，那调用的时候必须写全所有参数
 > 建议把默认参数放到最后面，这样可以确保非默认参数的赋值顺序，减少参数混乱的情况
-
 
 ### 5. 闭包
 * 函数作为变量
@@ -635,7 +760,7 @@ newAdd(12, 32)
     statements      // 可以有多行
 }
 ```
-‘’
+
 闭包函数
 ```swift
 //定义一个函数变量
@@ -683,7 +808,58 @@ someFunctionThatTakesAClosure {
 }
 ```
 
-### 7. 常量参数和变量参数
+### 7. Escaping（逃逸）闭包
+如果一个闭包/函数作为参数传给另外一个函数，但这个闭包在传入函数返回之后才会执行，就称该闭包在函数中"逃逸"，需要在函数参数添加`@escaping`声明，来声明该闭包/函数允许从函数中"逃逸"，如下
+```swift
+var completionHandlers: [() -> Void] = []
+
+// 传入的闭包/函数并没有在函数内执行，需要在函数类型钱添加@escaping声明
+func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
+    completionHandlers.append(completionHandler)
+}
+```
+> 逃逸闭包只是一个声明，以增强函数的意图
+
+### 8. 自动闭包
+对于没有参数的闭包，swift提供了一种简写的方式，直接写函数体，不需要函数形式（返回值和参数列表），如下
+```swift
+// 声明一个自动闭包（无参数，可以有返回值，返回值类型swift可以自动识别）
+let sayHello = { print("hello world") }
+
+//调用闭包函数
+sayHello()
+```
+> 自动闭包只是闭包的一种简写方式
+
+如果一个函数接受一个不带参数的闭包
+```swift
+func logIfTrue(predicate: () -> Bool) {
+    if predicate() {
+        print("True")
+    }
+}
+```
+调用的时候可以使用自动闭包
+```swift
+logIfTrue(predicate: { return 1 < 2 })
+
+// 可以简化return
+logIfTrue(predicate: { 1 < 2 })
+```
+上面代码看起来可读性不是很好，swift引入了一个关键字`@autoclosure`，简化自动闭包的大括号，在闭包类型前面添加该关键字声明
+```swift
+func logIfTrue(predicate: @autoclosure () -> Bool) {
+    if predicate() {
+        print("True")
+    }
+}
+
+// 调用
+logIfTrue(predicate:1 < 2)
+```
+> `@autoclosure` 关键字是为了简化闭包的写法，增强可读性，这里的例子比较简单，可以参考：[@AUTOCLOSURE 和 ??](http://swifter.tips/autoclosure/)
+
+### 9. 常量参数和变量参数
 默认情况下所有函数参数都是常量，意味着参数是不可变的，我们可以显式的声明参数为变量
 ```swift
 func log(msg: String) {
@@ -697,7 +873,7 @@ func log(var msg: String) {
 ```
 > 注：变量参数在swift3被抛弃
 
-### 8. 输入输出参数
+### 10. 输入输出参数
 在c语言里有指针，可以通过传址直接修改外部变量的值，在swift通过`inout`关键字声明函数内部可直接修改外部变量，外部通过`&`操作符取得变量地址
 ```swift
 func swap(inout a: Int, inout b: Int) {
@@ -709,8 +885,21 @@ var a = 19, b = 3
 swap(&a, &b)
 ```
 
-#### 9. defer
-在swift2.0之后添加了`defer`关键字，可以定义代码块在函数执行完成之前的完成一些操作
+### 11. 嵌套函数
+swift的函数还支持嵌套，默认情况下，嵌套函数对外部不可见，只能在函数内部使用
+```swift
+func chooseStepFunction(backward: Bool) -> (Int) -> Int {
+    //定义两个内部函数
+    func stepForward(input: Int) -> Int { return input + 1 }
+    func stepBackward(input: Int) -> Int { return input - 1 }
+
+    return backward ? stepBackward : stepForward
+}
+```
+嵌套函数相当于objc函数内的block
+
+### 12. defer
+在swift2.0之后添加了`defer`关键字，可以定义代码块在函数执行完成之前的完成一些操作，**并且在函数抛出错误的时候也可以执行**
 ```swift
 func test() {
     print("begin1")
@@ -754,6 +943,9 @@ end1
 
 ## 九、枚举
 swift的枚举比C语言的枚举更为强大，支持更多特性，swift的枚举更像类和结构体，支持类和结构体的一些特性，与`ObjC`不同，如果不声明枚举的值，编译器不会给枚举设置默认值
+
+> 枚举与结构体一样，是值类型
+
 ### 1. 声明和使用
 ```swift
 // 1. 定义枚举
@@ -763,6 +955,7 @@ enum CompassPoint {
     case East
     case West
 }
+
 // 2. 可以把枚举值定义在一行，用逗号隔开
 enum CompassPoint2 {
     case North, South, East, West
@@ -814,8 +1007,48 @@ let weapon = Character.Weapon.Bow
 let helmet = Character.Helmet.Iron
 ```
 
+### 3. 递归枚举
+枚举的关联值的类型可以设为枚举自身，这样的枚举称为递归枚举
+```swift
+enum ArithmeticExpression {
+    case number(Int)
+    indirect case addition(ArithmeticExpression, ArithmeticExpression)
+    indirect case multiplication(ArithmeticExpression, ArithmeticExpression)
+}
+```
+带递归类型的枚举需要在case前面添加关键字声明`indirect`，也可以在enum前面加上声明，表示所有的成员是可以递归的
+```swift
+indirect enum ArithmeticExpression {
+    case number(Int)
+    case addition(ArithmeticExpression, ArithmeticExpression)
+    case multiplication(ArithmeticExpression, ArithmeticExpression)
+}
+```
 
-### 3. 原始值
+使用递归枚举取值的时候可以使用递归函数
+```swift
+func evaluate(_ expression: ArithmeticExpression) -> Int {
+   switch expression {
+   case let .number(value):
+       return value
+   case let .addition(left, right):
+       return evaluate(left) + evaluate(right)
+   case let .multiplication(left, right):
+       return evaluate(left) * evaluate(right)
+   }
+}
+
+let five = ArithmeticExpression.number(5)
+let four = ArithmeticExpression.number(4)
+let sum = ArithmeticExpression.addition(five, four)
+
+// (5 + 4) * 2
+let product = ArithmeticExpression.multiplication(sum, ArithmeticExpression.number(2))
+print(evaluate(product))
+```
+> 其实感觉这种嵌套多层的用法可读性并不是特别好，而且在取值的时候还需要递归，通常来说，嵌套一层就够了
+
+### 4. 原始值
 与C语言一样，可以为每个枚举指定值，并且可以支持更多类型（`Int`, `Float`, `Character`, `String`）
 ```swift
 // 定义枚举，并初始化原始值
@@ -833,14 +1066,26 @@ ch.rawValue     // 获得原始值
 // 3. 通过原始值构造枚举，如果不存在，则返回nil
 var tab = ASCIIControlCharacter.init(rawValue: "\t")
 
-// 4. 如果是原始值是整形值，后面的值默认自增1
+// 4. 如果是原始值是整形值，后面的值默认自增1，如果不指定，则默认为空，而不是从0开始
 enum Planet: Int {
     case Mercury = 1, Venus         // Venus = 2
     case Neptune                    // Neptune = 3
 }
+
+// 5. 如果没有指定枚举原始值的类型，则默认为空，而不是整型
+enum CompassPoint {
+    case North
+    case South
+    case East
+    case West
+}
+//swift 不会为North, South, East, West设置为0,1,2,3，并且CompassPoint没有原始值（rawValue）
+
+// 6. 有原始值的枚举可以通过原始值构造（构造器返回可选类型）
+let lineFeed = ASCIIControlCharacter(rawValue: "\n")
 ```
 
-### 4. 关联值
+### 5. 关联值
 上面我们说到，枚举与类和结构体类似，swift的枚举可以给不同的枚举值绑定关联值，如下
 ```swift
 enum Barcode {
@@ -858,16 +1103,19 @@ case let .QRCode(value):
     print("qrcode: \(value)")
 }
 ```
-如上面这种轻量的数据，一般来说我们可能需要定义两个类实现，而swift的枚举可以轻松的处理这种轻量数据，而减少项目中类的定义和维护
-
+如上面这种轻量的数据，在OC上一般我们可能需要定义两个类实现，而swift的枚举可以轻松的处理这种轻量数据，而减少项目中类的定义和维护
 
 ## 十、类与结构体
 先来看看结构体和类的一些差异
 * 类是引用类型，结构体为值类型
 * 类使用引用计数管理内存，结构体分配在栈上，有系统管理内存，变量传递的时候，结构体整个拷贝，而类默认只传递引用地址（有些类会进行一些额外的拷贝，详见[深拷贝和浅拷贝]()）
 * 结构体不支持继承，类支持继承
-* 结构体是值类型
 * 与ObjC不同，swift的结构体可以定义方法
+* 类支持运行时类型检查，而结构体不支持
+* 类有构造器和析构器，结构体只有构造器
+* 常量结构体的成员的值不能改变
+
+> 实际上，在 Swift 中，所有的基本类型:整数(Integer)、浮 点数(floating-point)、布尔值(Boolean)、字符串(string)、数组(array)和字典(dictionary)，都是 值类型，并且在底层都是以结构体的形式所实现。
 
 ### 1. 结构体，类定义
 ```swift
@@ -898,6 +1146,7 @@ class Person {
     }
 }
 ```
+swift中，许多基本类型如`String`, `Array`和`Dictionary`都是用结构体实现的，意味着在传递的时候都会进行值拷贝，当然swift也对这些类型进行了优化，只有在需要的时候进行拷贝
 
 ### 2. 静态属性，静态方法
 swift中有两个`static`和`class`声明静态变量或方法，其中`class`只能用在类的方法和计算属性上，其他的都使用`static`，由于类支持继承，所以使用`class`声明的静态方法可以被继承，而static声明的静态方法不能被继承
@@ -1078,7 +1327,6 @@ public class SomeClass {
 类型别名访问级别与类型的关系
 * 类型别名的访问级别不能高于原类型的访问级别；
 
-
 函数构造函数默认访问级别为internal，如果需要给其他模块使用，需显式声明为public
 
 
@@ -1096,9 +1344,11 @@ internal class B: A {
 ```
 
 ### 7. 属性
-* 使用关键字`lazy`声明一个懒加载属性，当属性被使用的时候（get），才会进行初始化
+* 使用关键字`lazy`声明一个懒加载 __变量__ 属性，当属性被使用的时候（get），才会进行初始化
 * set方法的访问级别必须必get方法低
 * 声明属性的时候可以使用`private(set)`和`internal(set)`改变set方法默认的访问级别
+* 每个实例都有一个self属性，指向实例自身，通常在属性与函数参数有冲突的时候使用
+* 对于常量属性，不许在定义它的类的构造器中赋值，不能再子类赋值
 
 ```swift
 class DataImporter {
@@ -1129,26 +1379,39 @@ class Rectangle {
         }
     }
 
-    // 4. 只读属性，可以省略get
+    // 4. 只读属性，可以省略get，直接使用一个花括号
     var perimeter: Double {
         return (self.width + self.height) * 2
     }
 
     // 5. 属性监视器，在初始化的时候不会触发
     var someInt: Int = 0 {
-        willSet {
+        willSet {       //用法与set一样如果不指定名称，默认通过newValue使用旧值
             print("set方法之前触发")
         }
-        didSet {
+        didSet {        //用法与set一样如果不指定名称，默认通过oldValue使用旧值
             print("set方法完成后触发，可以在这里设置obj的值覆盖set方法设置的值")
-            self.someInt = 0      // someInt的值永远为0
+            self.someInt = 0      // someInt的值永远为0，在监视器修改属性的值不会导致观察器被再次调用
         }
     }
 }
 ```
 
+> 使用lazy声明的属性不是线程安全的，在多线程情况下可能产生多份，需要自己控制
+
+对于结构体，与OC不同，swift的结构体允许直接对属性的子属性直接修改，而不需要取出重新赋值
+```swift
+someVideoMode.resolution.width = 1280
+```
+在oc上需要这样做
+```objc
+var resolution = someVideoMode.resolution
+resolution.width = 1024
+someVideoMode.resolution = resolution
+```
+
 ### 8. 继承
-我们都知道，在oc里所有的类都继承自NSObject/NSProxy，而在swift中的类并不是从一个通用的基类继承的，所有没有继承其他父类的类都称为基类
+我们都知道，在oc里所有的类都继承自NSObject/NSProxy，而在swift中的类并不是从一个通用的基类继承的，所有没有继承其他父类的类都称为`基类`
 ```swift
 class Parent {
     final var gender = "unknown"
@@ -1162,11 +1425,15 @@ class Parent {
 class Son: Parent {
     // 重写可以改变父类方法的访问级别
     internal override func hello() {                  // 重写父类方法必须加上override，否则会报编译错误
-        //super.hello()                               //可以通过super调用父类发方法
+        //super.hello()                               // 可以通过super访问父类成员，包括附属脚本
         print("son hello")
     }
 }
 ```
+
+> 重写属性的时候，如果属性提供了setter方法，则必须为提供getter方法
+> 如果重写了属性的setter方法，则不能重写willSet和didSet方法
+> 如果重写了willSet和didSet方法，则不能重写get和set方法
 
 父类的属性，方法，类方法，附属脚本，包括类本身都可以被子类继承和重写，可以通过`final`约束限制子类的重写（`final class`, `final var`, `final func`, `final class func`, 以及 `final subscript`）
 ```swift
@@ -1261,6 +1528,36 @@ dailyMeal[.Breakfast] = "sala"
 print(dailyMeal[.Breakfast])
 ```
 
+附加脚本还支持多个参数
+```swift
+struct Matrix {
+    let rows: Int, columns: Int
+    var grid: [Double]
+    init(rows: Int, columns: Int) {
+        self.rows = rows
+        self.columns = columns
+        grid = Array(count: rows * columns, repeatedValue: 0.0)
+    }
+    func indexIsValidForRow(row: Int, column: Int) -> Bool {
+        return row >= 0 && row < rows && column >= 0 && column < columns
+    }
+    subscript(row: Int, column: Int) -> Double {
+        get {
+            assert(indexIsValidForRow(row, column: column), "Index out of range")
+            return grid[(row * columns) + column]
+        }
+        set {
+            assert(indexIsValidForRow(row, column: column), "Index out of range")
+            grid[(row * columns) + column] = newValue
+        }
+    }
+}
+
+var matrix = Matrix(rows: 2, columns: 2)
+matrix[0, 1] = 1.5
+matrix[1, 0] = 3.2
+```
+
 附加脚本类似属性，拥有get/set方法，支持只读和读写两种方式，附加脚本也支持多个参数，附属脚本可以屏蔽外部对内部对象的直接访问，隐藏对象内部的细节，提高封装度，使得代码更加健壮和简洁
 
 ### 10. 类型嵌套
@@ -1303,7 +1600,7 @@ func add(a: MyInt, b: MyInt) -> MyInt {
     return a + b
 }
 ```
-在容易出现命名冲突的情况下会考虑使用类型别名
+> 通常在容易出现命名冲突的情况下会考虑使用类型别名
 
 ## 十一、扩展Extension
 与oc一样，扩展就是对已有的类添加新的功能，与oc的category类似，swift的扩展可以：
@@ -1392,7 +1689,7 @@ protocol SomeProtocol {
 ```
 
 ### 1. mutating
-在swift中的结构体和枚举都是值类型，默认情况下不能对其进行修改，编译不通过，如果需要修改值类型的属性，需要在方法声明前加上`mutating`
+在结构体/枚举中的值类型变量，默认情况下不能对其进行修改，编译不通过，如果需要修改值类型的属性，需要在方法声明前加上`mutating`
 ```swift
 struct Point {
     var x: Int
@@ -1407,8 +1704,30 @@ struct Point {
         self.x = point.x        // 编译通过
         self.y = point.y        // 编译通过
     }
+
+    //可变方法还可以对self进行修改，这个方法和moveToPoint2效果相同
+    mutating func moveToPoint3(x deltaX: Int, y deltaY: Int) {
+        self = Point(x:deltaX, y:deltaY)
+    }
 }
 ```
+可变方法还可以修改枚举值自身的值
+```swift
+enum TriStateSwitch {
+    case Off, Low, High
+    mutating func next() {
+        switch self {
+            case .Off:
+                self = .Low
+            case .Low:
+                self = .High
+            case .High:
+                self = .Off
+        }
+    }
+}
+```
+
 特别是在定义Protocal的时候，需要考虑到协议可能作用于枚举或结构体，在定义协议的时候需要在方法前加上`mutating`
 ```swift
 protocol SomeProtocol {
@@ -1470,7 +1789,65 @@ import Foundation
 ```
 
 
-## 十三、泛型
+## 十三、错误
+与其他高级语言异常处理有点类似，swift引入了错误的机制，可以在出现异常的地方抛出错误，错误对象继承自Error，抛出的错误函数会立即返回，并将错误丢给调用函数的函数处理，如果一个函数可能抛出错误，那么必须在函数定义的时候进行声明，如下
+```swift
+//定义错误类型
+enum OperationError: Error {
+    case DivideByZero
+    case Other
+}
+
+//定义可能抛出异常的函数，在函数声明的返回值前面加上throws
+func divide(a: Int, b: Int) throws -> Float {
+    if b == 0 {
+        throw OperationError.DivideByZero
+    }
+    return Float(a) / Float(b)
+}
+
+//调用可能出错的函数（调用出必须加上try）
+do {
+    let result = try divide(a: 10, b: 0)
+    print(result)
+} catch OperationError.DivideByZero {
+    print(error)
+} catch {
+    //其他错误
+}
+```
+
+如果错误是一个对象，而不是枚举，可以用let绑定到变量上
+```swift
+do {
+    try divide(a: 10, b: 0)
+} catch let err as SomeErrorType {
+    print(err.message)
+} catch {
+    print("other error")
+}
+```
+
+如果不处理错误的话可以使用`try?`，使用try?关键字的方法会被包装到一个可选类型中，如果发生错误，则会返回nil，如下面序列化的例子
+```swift
+func serialize(obj: AnyObject) -> String {
+    guard let jsonString = try? someSerializeFuncMayThrowError(obj) else {
+        print(jsonString)
+    }
+    print("fail")
+}
+```
+> try?配合guard let一起使用效果更好
+
+
+## 十四、断言
+断言可以让我们在调试时候更好的发现问题，排查错误，几乎所有的高级语言都支持断言，swift也如此，断言的代码在release的时候回被忽略，不会影响发布程序的性能，只会在调试的时候生效
+```swift
+// 如果age小于0，程序会停止，并输出错误信息
+assert(age >= 0, "A person's age cannot be less than zero")
+```
+
+## 十五、泛型
 关于泛型的介绍，这里不进行说明，swift的泛型是我认为最酷的特性之一，当然其他语言也有，可以让类或函数更大程度的重用，swift的泛型与其他语言的泛型有点类似
 ### 1. 定义
 在类或函数声明的时候，指定一个泛型类型参数（通常为T）然后使用的时候直接把T当成类型使用
@@ -1565,7 +1942,7 @@ class SomeClass<T> : GenericProtocol {
 }
 ```
 
-## 十四、运算符重载
+## 十六、运算符重载
 与其他高级语言的一样，swift也提供了运算符重载的功能，我们可以自定义运算符的实现，运算符通常分为三种类型
 * 单目运算符：`<运算符><操作数>`或`<操作数><运算符>`，如`!a`
 * 双目运算符：`<操作数><运算符><操作数>`，如：`1 + 1`
@@ -1682,10 +2059,14 @@ let aa = 2 ^ (2 ^ (2 ^ 2))
 ```
 如果结合性设置为`none`，则会报错，无法判断
 
-## 十五、命名空间
+## 十七、命名空间
 在很多语言里面，都有命名空间的概念，可以分离代码，防止命名冲突，而swift也有类似命名空间的概念，通过访问级别实现命名空间
 //TODO
 
-## 十六、参考链接
+## 十八、参考链接
 * [运算符结合性](https://en.wikipedia.org/wiki/Operator_associativity#Right-associativity_of_assignment_operators)
 * [Swift高级运算符](https://developer.apple.com/library/prerelease/content/documentation/Swift/Conceptual/Swift_Programming_Language/AdvancedOperators.html)
+
+
+## 十九、总结
+总的来说，swift还是比较装逼的，整个很多新名词，新概念，例如，指定构造器，便利构造器，构造器代理，但其实这些东西在别的语言基本上有，没那么复杂，另外swift的关键字太多了，有些可有可无，是不是苹果看到什么好的就想往swift里面塞还是怎么着，另外感觉苹果还是太装逼了，例如do-while非要偏偏要搞成repeat-while啥的，个人感觉编程语言应该是轻便，简单，当然，并且能满足所有需求的，反正，没什么特别的好感
