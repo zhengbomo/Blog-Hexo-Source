@@ -90,9 +90,26 @@ category_generator:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://zhengbomo@github.com/zhengbomo/zhengbomo.github.io.git
+  repo: https://zhengbomo@github.com/zhengbomo/zhengbomo.github.io.git
   branch: master
+  # message: [message]
+  name: bomo
+  email: zhengbomo@hotmail.com
+  
 
 
 # 百度统计
 # baidu_analytics: 9b8faaa3e23701354da463520ae2442f
+
+
+addlink:
+  before_text: hello # text before the post link
+  after_text: bye # text after the post link
+
+
+# Hexo Beautify
+beautify:
+  types:
+    - html
+    - css
+    - js
