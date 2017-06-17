@@ -238,6 +238,10 @@ session.query(User.name).filter(~exists().where(User.role_id == Role.id))
 # 6.2 除了exists，any也可以表示EXISTS
 session.query(Role).filter(Role.users.any())
 
+# 7 random
+from sqlalchemy.sql.functions import random
+user = session.query(User).order_by(random()).first()
+
 
 session.close()
 ```

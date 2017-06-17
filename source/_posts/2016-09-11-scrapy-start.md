@@ -526,6 +526,15 @@ DOWNLOADER_MIDDLEWARES = {
 }
 ```
 
+### 3. 代理服务器
+爬虫最怕的就是封ip，这时候就需要代理服务器来爬取，scrapy设置代理服务器非常简单，只需要在请求前设置`Request`对象的`meta`属性，添加`proxy`值即可，通常我们可以通过中间件来做
+```python
+class ProxyMiddleware(object):
+    def process_request(self, request, spider):
+        proxy = 'https://178.33.6.236:3128'     # 代理服务器
+        request.meta['proxy'] = proxy
+```
+
 ## 九、缓存
 scrapy默认已经自带了缓存的功能，通常我们只需要配置即可，打开`settings.py`
 ```python
@@ -538,7 +547,7 @@ HTTPCACHE_ENABLED = True
 # 缓存路径(默认为：.scrapy/httpcache)
 HTTPCACHE_DIR = 'httpcache'
 
-# 忽略的状态码
+# 忽略的状态码，例如：302
 HTTPCACHE_IGNORE_HTTP_CODES = []
 
 # 缓存模式(文件缓存)
