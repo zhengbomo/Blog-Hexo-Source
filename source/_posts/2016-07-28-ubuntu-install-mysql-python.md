@@ -137,7 +137,7 @@ $ sudo apt-get install libmysqlclient-dev
 
 登陆看看
 ```bash
-$ mysql -uroot -p
+$ mysql -u root -p
 ```
 然后输入密码，ok
 ![](http://7xqzvt.com1.z0.glb.clouddn.com/16-7-28/96881626.jpg)

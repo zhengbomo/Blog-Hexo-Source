@@ -4,7 +4,7 @@
 
 # Site
 title: bomo的开发随笔
-subtitle: 记录生活工作点滴
+subtitle: 记录工作学习点滴
 description: 懒人
 author: bomo
 email: zhengbomo@hotmail.com
@@ -95,7 +95,7 @@ deploy:
   # message: [message]
   name: bomo
   email: zhengbomo@hotmail.com
-  
+
 
 
 # 百度统计
