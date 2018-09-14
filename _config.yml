@@ -90,7 +90,7 @@ category_generator:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://zhengbomo@github.com/zhengbomo/zhengbomo.github.io.git
+  repo: https://zhengbomo:Zz111111@github.com/zhengbomo/zhengbomo.github.io.git
   branch: master
   # message: [message]
   name: bomo
