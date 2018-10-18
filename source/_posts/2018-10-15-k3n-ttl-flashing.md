@@ -1,6 +1,6 @@
 ---
-title: K3N通过ttl刷K3固件
-tags: [路由器]
+title: 斐讯K3N通过ttl刷K3固件
+tags: [路由器, 斐讯]
 date: 2018-10-15 08:01:56
 updated:
 categories: 路由器
