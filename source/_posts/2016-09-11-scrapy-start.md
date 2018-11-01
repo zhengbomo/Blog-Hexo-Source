@@ -64,7 +64,7 @@ tutorial/:          该项目的python模块, 在这里添加代码
 ```
 
 我们先看一下scrapy的处理流程图
-![流程图](http://7xqzvt.com1.z0.glb.clouddn.com/16-10-4/14531221.jpg)
+![流程图](/images/post/20180707174111682.png)
 
 scrapy由下面几个部分组成
 * `spiders`：爬虫模块，负责配置需要爬取的数据和爬取规则，以及解析结构化数据
@@ -190,7 +190,7 @@ class TestSpider(Spider):
 
     def login_parse(self, response):
         ''' 如果登录成功,手动构造请求Request迭代返回 '''
-        print response
+        print(response)
         for i in range(0, 10):
             yield Request('http://www.example.com/list/1?page={0}'.format(i))
 
@@ -201,7 +201,7 @@ class TestSpider(Spider):
 
     def parse(self, response):
         ''' 默认请求处理函数 '''
-        print response
+        print(response)
 ```
 
 ## 四、Selector
@@ -225,7 +225,7 @@ html = '<html><body><span>good</span><span>buy</span></body></html>'
 sel = Selector(text=html)
 nodes = sel.xpath('//span')
 for node in nodes:
-    print node.extract()
+    print(node.extract())
 ```
 Selector相当于节点，通过xpath去到子节点集合（SelectorList），可以继续搜索，通过`extract`方法可以取出节点的值，`extract`方法也可以作用于SelectorList，对于SelectorList可以通过`extract_first`取出第一个节点的值
 
@@ -259,7 +259,7 @@ lis = sel.css('li.video_part_lists')
 
 for li in lis:
     # 选择a节点的属性
-    print li.css('a::attr(href)').extract()
+    print(li.css('a::attr(href)').extract())
 ```
 
 关于css选择器更多的规则，可以见w3c官网
@@ -292,7 +292,7 @@ class DmozSpider(scrapy.Spider):
             dmoz_item['title'] = sel.xpath('a/text()').extract()
             dmoz_item['link'] = sel.xpath('a/@href').extract()
             dmoz_item['desc'] = sel.xpath('text()').extract()
-            print dmoz_item
+            print(dmoz_item)
 ```
 
 ## 六、Pipeline
@@ -619,7 +619,7 @@ def start_requests(self):
         yield Request(u.link, meta={'name': u.name})
 
 def parse(self, response):
-    print response.url, response.meta['name']
+    print(response.url, response.meta['name'])
 ```
 
 ### 5. 如何进行循环爬取
