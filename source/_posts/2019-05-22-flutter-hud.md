@@ -1,8 +1,8 @@
 ---
-title: Flutter实现一个ProgressHUD
+title: flutter实现一个ProgressHUD
 tags: [iOS, flutter]
 date: 2019-04-24 23:02:17
-updated:
+updated: 2019-04-24 23:02:17
 categories: flutter
 ---
 

@@ -1,9 +1,9 @@
 ---
-title: Flutter给控件设置圆角
+title: flutter给控件设置圆角
 tags: [flutter]
 date: 2019-02-20 19:51:44
 updated: 2019-02-20 19:51:44
-categories:
+categories: flutter
 ---
 
 Flutter给控件设置圆角有几种方式，可以通过裁切Widget包装，也可以通过装饰器设置
