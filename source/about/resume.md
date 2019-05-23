@@ -16,8 +16,8 @@ comments: false
 - 郑贤凯/男/1992
 - 本科/东莞理工学院-信息与计算科学
 - 工作年限：5年
-- 技术博客：https://blog.bombox.org/
-- github：http://github.com/zhengbomo  
+- 技术博客：https://blog.bombox.org
+- github：http://github.com/zhengbomo
 - 期望职位：iOS高级工程师
 - 期望城市：广州
 
@@ -48,7 +48,7 @@ comments: false
 
 ##### 标签
 
-* `SDK`, `马甲包`, `逆向`, `混淆`, `Objective-C`, `Swift`
+`SDK`, `马甲包`, `逆向`, `混淆`, `Objective-C`, `Swift`
 
 ##### 游多多iOS
 
