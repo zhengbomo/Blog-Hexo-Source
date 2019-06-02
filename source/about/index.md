@@ -13,8 +13,3 @@ Windows开发/iOS搬运工
 ### 链接
 
 * [Github](https://github.com/zhengbomo)
-* [Weibo](http://weibo.com/1891587992)
-
-### 简历
-
-[个人简历](/about/resume.html)
