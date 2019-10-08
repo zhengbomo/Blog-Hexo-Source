@@ -8,7 +8,7 @@ subtitle: 记录工作学习点滴
 description: 懒人
 author: bomo
 email: zhengbomo@hotmail.com
-language: zh-Hans
+language: zh-CN
 timezone:
 
 # URL
@@ -113,3 +113,8 @@ beautify:
     - html
     - css
     - js
+
+search:
+  path: search.xml
+  field: post
+  content: true
