@@ -202,3 +202,7 @@ test.minus(6, 2)    // 4
 
 ## 小结
 Cycript 可以直接附加到App 进行内存调试，可以查看和修改 UIViewController，UIView，可以动态修改和分析应用的业务逻辑，用起来非常方便
+
+
+## 引用
+* [Cycript 官网](http://www.cycript.org)

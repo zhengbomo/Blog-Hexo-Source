@@ -1,7 +1,7 @@
 ---
 title: iOS可执行文件权限签名
 tags: [iOS, entitlement]
-date: 2020-02-04 15:06:25
+date: 2019-08-04 15:06:25
 updated:
 categories: iOS
 ---
