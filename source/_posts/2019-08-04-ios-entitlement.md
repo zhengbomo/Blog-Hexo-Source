@@ -62,7 +62,7 @@ ldid -SpringBoard.entitlements TestTool
 除`ldid`外，也可以通过`codesign`进行签名，`codesign`就有一个entitlement参数
 
 ```sh
-$ codesign -d --entitlements TestTool.entitlements TestTool
+codesign -d --entitlements TestTool.entitlements TestTool
 ```
 
 ## 实践
@@ -72,7 +72,7 @@ $ codesign -d --entitlements TestTool.entitlements TestTool
 `SpringBoard`应用位于`/System/Library/CoreServices/SpringBoard.app`，我们先把他拷贝出来
 
 ```sh
-$ scp root@xx.xx.xx.xx:/System/Library/CoreServices/SpringBoard.app/SpringBoard ~/Desktop/SpringBoard
+scp root@xx.xx.xx.xx:/System/Library/CoreServices/SpringBoard.app/SpringBoard ~/Desktop/SpringBoard
 ```
 
 通过上面的`ldid`命令导出得到entitlement，如下
@@ -752,13 +752,16 @@ $ scp root@xx.xx.xx.xx:/System/Library/CoreServices/SpringBoard.app/SpringBoard 
 </dict>
 </plist>
 ```
+
 其中`get-task-allow`为允许其他进程（如调试器）附加到您的应用程序。我们自己编译的App可以进行调试，而商店下载的App没有该选项
 
 相比之下，默认的App权限少得可怜，我们可以吧SpringBoard的权限`SpringBoard.entitlement`签名到我们的程序`XXX`中，这样就可以有更多的操作权限了，例如访问沙盒外的路径
+
 ```sh
-$ ldid -SSpringBoard.entitlement XXX
+ldid -SSpringBoard.entitlement XXX
 ```
 
 ## 引用
+
 * [官方AboutEntitlements](https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/EntitlementKeyReference/Chapters/AboutEntitlements.html)
 * [iOS Entitlement分析](https://blog.0xbbc.com/2014/12/ios-entitlement%E5%88%86%E6%9E%90/)

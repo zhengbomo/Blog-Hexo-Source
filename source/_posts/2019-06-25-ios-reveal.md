@@ -12,12 +12,13 @@ categories: iOS
 
 ![RevealAppstore](/images/post/reveal_appstore.png)
 
-
 ## 准备
+
 1. 一台越狱的手机
 2. [Reveal](https://xclient.info/s/reveal.html)，推荐使用v4以上的版本，支持USB链接，速度快
 
 ## 手机安装Reveal2Loader插件
+
 在Cydia搜索`Reveal2Loader`，该插件在`BissBoss`源，直接就能搜到，安装
 
 {% img /images/post/reveal2loader.jpg 300 Reveal2Loader %}
@@ -27,6 +28,7 @@ categories: iOS
 {% img /images/post/restartspringboard.jpg 300 RestartSpringBoard %}
 
 ## 拷贝Reveal服务文件到iPhone中
+
 打开mac上的Reveal，`Help`->`Show Reveal Library in Finder`->`iOS Library`
 ![Reveal2Loader](/images/post/reveal_ios_library.png)
 
@@ -36,13 +38,14 @@ categories: iOS
 
 ```sh
 # 进入目录
-$ cd /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/RevealServer.framework
+cd /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/RevealServer.framework
 
 # 如果手机上没有/Library/RHRevealLoader这个目录，需要先创建一下
-$ scp RevealServer root@xx.xx.xx.xx:/Library/RHRevealLoader/libReveal.dylib
+scp RevealServer root@xx.xx.xx.xx:/Library/RHRevealLoader/libReveal.dylib
 ```
 
 将`RevealServer.framework`复制到手机的`/System/Library`中
+
 ```sh
 # 进入目录
 $ cd /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries
@@ -52,9 +55,11 @@ $ scp -r RevealServer.framework root@xx.xx.xx.xx://System/Library/RevealServer.f
 ```
 
 ## 重启手机
+
 ```sh
-$ killall SpringBoard
+killall SpringBoard
 ```
+
 这时候设置里面会出现`Reveal`选项
 {% img /images/post/setting_reveal.jpg 300 SettingReveal %}
 
@@ -68,6 +73,3 @@ $ killall SpringBoard
 ![RevealAppstore](/images/post/reveal_appstore.png)
 
 Reveal可以看到视图结构，内存地址，还能看到`View`对应的`ViewController`
-
-
-
