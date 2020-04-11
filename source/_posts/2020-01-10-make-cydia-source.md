@@ -8,6 +8,8 @@ categories: iOS
 
 对于自己开发的插件，也需要使用软件源来维护和备份，可以向其他源一样，直接安装插件，这个记录一下搭建的过程
 
+<!-- more -->
+
 ## 准备
 
 1. 创建一个目录 `cydia`
@@ -76,7 +78,7 @@ apt-get install dpkg-dev
 把我们准备好的文件拷贝到 linux 系统
 
 ```sh
-docker cp -r ~/Desktop/cydia 75119aae5029:/var/cydia
+docker cp ~/Desktop/cydia 75119aae5029:/var/cydia
 ```
 
 生成Packages
