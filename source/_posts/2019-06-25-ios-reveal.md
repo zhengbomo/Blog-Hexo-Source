@@ -48,10 +48,10 @@ scp RevealServer root@xx.xx.xx.xx:/Library/RHRevealLoader/libReveal.dylib
 
 ```sh
 # 进入目录
-$ cd /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries
+cd /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries
 
 # 远程拷贝目录
-$ scp -r RevealServer.framework root@xx.xx.xx.xx://System/Library/RevealServer.framework
+scp -r RevealServer.framework root@xx.xx.xx.xx://System/Library/RevealServer.framework
 ```
 
 ## 重启手机
