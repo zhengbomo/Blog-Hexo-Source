@@ -1,5 +1,5 @@
 ---
-title: 使用Reveal查看AppUI结构
+title: 【iOS逆向】使用Reveal查看AppUI结构
 tags: [iOS, 逆向, Reveal]
 date: 2019-06-25 23:37:56
 updated: 2019-06-25 23:37:56

@@ -9,9 +9,9 @@ categories: iOS
 
 `THEOS`提供了`iphone/preference_bundle_modern`工具，可以为插件添加设置项，该设置项会被打包成bundle并和tweak插件合并打包到`deb`文件中
 
-{% img /images/post/tweak-preference-entry.png 300 %}
-
 <!-- more -->
+
+{% img /images/post/tweak-preference-entry.png 300 %}
 
 ## 创建preference bundle
 

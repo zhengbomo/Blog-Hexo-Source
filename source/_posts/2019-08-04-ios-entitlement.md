@@ -1,6 +1,6 @@
 ---
-title: iOS可执行文件权限签名
-tags: [iOS, entitlement]
+title: 【iOS逆向】iOS可执行文件权限签名
+tags: [iOS, 逆向]
 date: 2019-08-04 15:06:25
 updated:
 categories: iOS
@@ -52,7 +52,7 @@ ldid -e SpringBoard > SpringBoard.entitlements
 把权限`SpringBoard.entitlements`签名到可执行文件`TestTool`中
 
 ```sh
-ldid -SpringBoard.entitlements TestTool
+ldid -SSpringBoard.entitlements TestTool
 ```
 
 此时，`TestTool`就拥有跟`SpringBoard`一样的执行权限
