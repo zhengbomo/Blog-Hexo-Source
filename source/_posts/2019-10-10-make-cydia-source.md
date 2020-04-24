@@ -1,8 +1,8 @@
 ---
 title: 搭建自己的Cydia源
 tags: [iOS]
-date: 2020-03-10 15:43:48
-updated: 2020-03-10 15:43:48
+date: 2019-10-10 15:43:48
+updated: 2019-10-10 15:43:48
 categories: iOS
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: load和initialize方法
 tags: [iOS]
-date: 2020-04-14 22:38:09
-updated: 2020-04-14 22:38:09
+date: 2019-10-20 22:38:09
+updated: 2019-10-20 22:38:09
 categories: iOS
 ---
 
@@ -176,7 +176,6 @@ void prepare_load_methods(const headerType *mhdr)
             }
         }
     }
-
 
     // Major loop - process all modules in the header
     mods = hi->mod_ptr;
