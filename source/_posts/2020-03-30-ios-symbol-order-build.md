@@ -13,24 +13,24 @@ categories: iOS
 
 ## 基本原理
 
-1. 程序操作的内存为操作系统提供的`虚拟内存`，而不是直接操作物理内存
-2. `虚拟内存`到`物理内存`有一个映射表
+1. 进程运行时使用的内存是操作系统提供的`虚拟内存`，而不是直接操作物理内存
+2. 从`虚拟内存`到`物理内存`有一个映射表
 3. 进程的内存会进行`分页`管理，以页为单位
-4. 程序启动的时候，并不会把所有内存都加载到物理内存中，而是用到的时候才加载，没有用到的内存，并没有加载到物理内存中
+4. 程序启动的时候，**并不会把所有内存都加载到物理内存中**，而是用到的时候才加载，没有用到的内存，可能并没有加载到物理内存中
 5. 当程序访问到的内存地址（虚拟内存），如果还没有加载到物理内存时，就会触发`Page Fault`，（对应`System Trace`的`File Backed Page In`），然后操作系统把数据加载到物理内存中，如果已经已经加载到物理内存了，则会触发`Page Cache Hit`，后者是比较快的，这也是热启动比冷启动快的原因之一
 
-> 1. 基于上面原理. 我们的目标就是在启动的时候增加`Page Cache Hit`，减少`Page Fault`，减少启动时间
-> 2. 我们需要确定，在启动的时候，执行了哪些符号，尽可能让这些符号的内存集中在一起，减少占用的页数，就能减少`Page Fault`
+> 1. 基于上面原理. 我们的目标就是在启动的时候增加`Page Cache Hit`，减少`Page Fault`，从而达到优化启动时间的目的
+> 2. 我们需要确定，在启动的时候，执行了哪些符号，尽可能让这些符号的内存集中在一起，减少占用的页数，就能减少`Page Fault`的命中次数
 
 ## 测试Page Fault
 
-通过`Instrument / System Trace`工具，可以查看我们的App，在启动过程中的`Page Fault`数量
+通过`Instrument / System Trace`工具，可以查看我们的App，在启动过程中的`Page Fault`数量(File Breaked Page In)
 
 ![system trace page fault](/images/post/systemtrace-app-page-fault1.png)
 
 > 如果App比较大，`Analizing`的过程会比较久，需要耐心等待
 
-这里有个注意点，为了确保App是真正的冷启动，需要把内存清干净，不然会不太准，下图是我直接杀掉App，重新打开得到的结果
+这里有个注意点，为了**确保App是真正的冷启动**，需要把内存清干净，不然结果会不太准，下图是我直接杀掉App，重新打开得到的结果
 
 ![_](/images/post/systemtrace-app-page-fault3.png)
 
@@ -38,7 +38,7 @@ categories: iOS
 
 ## 确定代码执行顺序
 
-接下来需要确定App在启动的时候，调用了哪些函数（使用了哪些符号），这里我们使用[杨萧玉](http://yulingtianxia.com/)写的一个工具[AppOrderFiles](https://github.com/yulingtianxia/AppOrderFiles)，使用`Clang SanitizerCoverage`，通过编译器插装的方式，获取到调用函数的符号
+接下来需要确定App在启动的时候，调用了哪些函数（使用了哪些符号），这里我们使用[杨萧玉](http://yulingtianxia.com/)写的一个工具[AppOrderFiles](https://github.com/yulingtianxia/AppOrderFiles)，使用`Clang SanitizerCoverage`，通过编译器插装的方式，获取到调用函数的符号顺序
 
 通过pod引入
 
@@ -72,20 +72,20 @@ override func viewDidLoad() {
 
     ...
 
+    #if DEBUG
     // 延迟一下，让运行实践长一点，避免进入后因为PageFault造成卡顿
     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: {
-        #if DEBUG
         AppOrderFiles { (filePath) in
             if let p = filePath {
-                print("output file \(p)")
+                print("output order file \(p)")
             }
         }
-        #endif
     })
+    #endif
 }
 ```
 
-输出的文件在App沙盒，用模拟器运行更方便，得到文件`app.order`，这里面就是排好序的符号列表，根据App的执行顺序
+输出的文件在App沙盒，用模拟器运行更方便，得到文件`app.order`，这里面就是排好序的符号列表，根据App的执行顺序，如果项目比较大的话，会比较久
 
 ```txt
 ___swift_instantiateConcreteTypeFromMangledName
@@ -173,7 +173,7 @@ Products/Debug-iphoneos/xxx.app
 
 ![system trace page fault diff](/images/post/trace-page-fault-diff.png)
 
-`page fault`减少了900，速度提升`225ms`
+`page fault`减少了900，速度提升`225ms`，这里的时间与具体的运行环境有关系，建议多次测试
 
 ## 引用
 

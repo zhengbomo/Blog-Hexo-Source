@@ -63,7 +63,7 @@ categories: iOS
 * 类名方法名混淆，OC的话可以用宏占位和宏替换来做
 * llvm编译器混淆
 
-## 防止重签名
+## 防重签名
 
 我们都知道，App在打包签名后在app里面会带上`embedded.mobileprovision`，系统会通过该文件校验应用是否合法，这个文件就是我们打包用的文件，我们我们可以在代码中校验该文件是不是我们自己的，如果不是，则退出程序（AppStore下载的包没有`embedded.mobileprovision`）
 
@@ -154,7 +154,7 @@ int ptrace(int _request, pid_t _pid, caddr_t _addr, int _data);
 }
 ```
 
-当我打开debugserver的时候会失败(`Segmentation fault: 11`)
+当打开`debugserver`的时候会失败(`Segmentation fault: 11`)
 
 ```sh
 root# debugserver 127.0.0.1:3333 -a Test
@@ -167,7 +167,7 @@ laboshi:~ root#
 
 ### 使用`sysctl`函数反调试
 
-使用`sysctl`函数可以判断当前程序是否正在被调试，需要隔一段时间检测一下
+使用`sysctl`函数可以判断当前程序是否正在被调试，可以隔一段时间检测一下
 
 ```c
 #import <sys/sysctl.h>
@@ -199,15 +199,17 @@ bool isDebuging() {
 
 ### 反反调试
 
-上面反调试方法都是C语言的方法，而我们知道[`fishhook`](https://github.com/facebook/fishhook)可以 hook C方法，所以上面两个方法可以被fishhook替换掉
+上面反调试方法都是C语言的方法，而我们知道[`fishhook`](https://github.com/facebook/fishhook)可以 hook (系统的)C方法，所以上面两个方法可以被fishhook替换掉
 
-这时候我们就需要`让系统的C方法不被hook`，我们可以在别人hook之前换成我们自己的实现，然后别人再hook的时候就只是hook我们替换过的实现了，如何`确保我们的hook在别人之前调用`呢
+这时候我们就需要`保护系统的C方法不被hook`，我们可以在别人hook之前换成我们自己的实现，然后别人再hook的时候就只是hook我们替换过的实现了  
 
-我们知道，dyld加载App的时候，动态库是先加载的，而动态库的加载顺序是根据MachO文件描述的顺序（XCode中编译的顺序一样，也就是Frameworks,Libraries,and Embedded Content配置的顺序），我们可以用一个`防护的动态库`让我们的动态库先执行
+如何`确保我们的hook在别人之前调用`呢？
+
+我们知道，dyld加载App的时候，动态库是先加载的，而动态库的加载顺序是根据MachO文件描述的顺序（也就是`Xcode` -> `Frameworks,Libraries,and Embedded Content`配置的顺序），我们可以用一个`防护的动态库`让我们的动态库先执行
 
 当然如果MachO文件的动态链接库的顺序被改变了，还是会被别人先hook，这个成本就比较高了
 
-## 反hook
+## 防hook
 
 对于OC的方法的hook通常是使用runtime的方法交换来实现`method_exchangeImplementations`，所以我们确保这个方法是安全的，就能很大程度上降低OC方法被hook
 
@@ -219,7 +221,7 @@ bool isDebuging() {
 
 > dyld在加载程序的时候，会先加载动态库，并且是按照MachO文件存储的顺序加载（也就是Xcode链接库的顺序），所以我们可以把我们的hook代码放到动态库放到最前面，就可以然后在load方法交换方法
 
-当然，如果MachO文件的动态库链接顺序也被修改了，那么就没办法了，这时候可以通过一些逻辑判断来增加hook难度，例如如果调用次数多了，就退出程序
+当然，如果MachO文件的动态库链接顺序也被修改了，那么就没办法了，这时候可以通过一些逻辑判断来增加hook难度，例如如果调用次数多了，就退出程序`exit(0)`
 
 > 上面只做了`method_exchangeImplementations`方法的防护，还有其他一些潜在的危险方法也需要做防护，例如：`method_setImplementation`和`method_getImplementation`，通常我们没有用到这两个方法，如果没有用到，就直接替换掉
 
