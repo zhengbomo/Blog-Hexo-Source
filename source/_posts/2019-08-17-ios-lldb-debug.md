@@ -97,6 +97,15 @@ Exiting.
 
 > [iOS12 下配置debugserver + lldb调试环境的小技巧和问题处理](http://www.iosre.com/t/ios12-debugserver-lldb/14429)
 
+### 2. debugserver启动调试
+
+如果App没有运行，可以直接启动App调试
+
+```sh
+# 后面接的是完整路径
+debugserver -x backboard xx.xx.xx.xx:3333 /private/var/containers/Bundle/Application/B7984908-D77C-47AE-97AF-3803988F1401/Test.app/Test
+```
+
 ### 通过lldb连接调试器
 
 ```sh
@@ -143,16 +152,26 @@ iproxy 2333 3333
 (lldb) exit
 ```
 
+每次连接调试的时候都很麻烦，我们可以通过`别名`来简化连接，如下
+
+```sh
+# 使用 con 代替 process connect connect://xx.xx.xx.xx:12121
+(lldb) command alias con process connect connect://xx.xx.xx.xx:12121
+
+# 接下来就可以直接使用con连接
+(lldb) con
+```
+
 ### lldb常用命令
 
-* 列出所有断点：breakpoint list, br li
-* 打开、关闭某个断点：breakpoint enable, breakpoint disable, br dis, br del
-* 打印参数：frame variable, fr v
-* 打印方法名和行数：frame info
-* 打印寄存器的值：register read
-* 修改寄存器的值：register write rax 123
-* 列出文件加载基地址：image list
-* 执行地址的加减运算：p/x
+* 列出所有断点：`breakpoint list, br li`
+* 打开、关闭某个断点：`breakpoint enable, breakpoint disable, br dis, br del`
+* 打印参数：`frame variable, fr v`
+* 打印方法名和行数：`frame info`
+* 打印寄存器的值：`register read`
+* 修改寄存器的值：`register write rax 123`
+* 列出文件加载基地址：`image list`
+* 执行地址的加减运算：`p/x`
 
 ## 反调试
 
