@@ -103,7 +103,7 @@ Exiting.
 
 ```sh
 # 后面接的是完整路径
-debugserver -x backboard xx.xx.xx.xx:3333 /private/var/containers/Bundle/Application/B7984908-D77C-47AE-97AF-3803988F1401/Test.app/Test
+debugserver -x auto xx.xx.xx.xx:3333 /private/var/containers/Bundle/Application/B7984908-D77C-47AE-97AF-3803988F1401/Test.app/Test
 ```
 
 ### 通过lldb连接调试器

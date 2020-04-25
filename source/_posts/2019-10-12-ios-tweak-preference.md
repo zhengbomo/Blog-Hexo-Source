@@ -1,5 +1,5 @@
 ---
-title: 【iOS逆向】为Tweak插件添加设置
+title: 【iOS逆向】为Tweak插件添加设置项
 tags: [iOS, 逆向]
 date: 2019-10-12 11:45:59
 updated: 2019-10-12 11:45:59
