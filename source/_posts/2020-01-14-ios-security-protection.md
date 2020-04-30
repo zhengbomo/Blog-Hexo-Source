@@ -2,7 +2,7 @@
 title: iOS安全防护
 tags: [iOS, 逆向]
 date: 2020-01-14 22:35:28
-updated: 2020-01-14 22:35:28
+updated: 2020-04-30 22:35:28
 categories: iOS
 ---
 
@@ -150,6 +150,7 @@ int ptrace(int _request, pid_t _pid, caddr_t _addr, int _data);
 ```objc
 + (void)load {
     // PT_DENY_ATTACH 表示拒绝调试
+    // 第二个参数也可以设置为0，表示当前进程
     ptrace(PT_DENY_ATTACH, getpid(), 0, 0);
 }
 ```
@@ -164,6 +165,30 @@ Attaching to process Test...
 Segmentation fault: 11
 laboshi:~ root#
 ```
+
+直接使用`ptrace`方法的时候，编译完成后符号表会出现`ptrace`符号，提审可能会被拒，这个就看审核员的心情了，我们可以通过`dlopen`动态加载系统的动态库和方法
+
+```objc
+// 引用头文件
+#include <dlfcn.h>
+
+// 定义函数指针
+int (*ptrace_p)(int _request, pid_t _pid, caddr_t _addr, int _data);
+// 加载系统动态库
+void *handler = dlopen("/usr/lib/system/libsystem_kernel.dylib", RTLD_LAZY);
+
+if (handler) {
+    // 读取符号地址
+    ptrace_p = dlsym(handler, "ptrace");
+
+    if (ptrace_p) {
+        // 调用
+        ptrace_p(PT_DENY_ATTACH, 0, 0, 0);
+    }
+}
+```
+
+> 上面的字符串可以做一定的加密处理，减少特征
 
 ### 使用`sysctl`函数反调试
 
@@ -209,9 +234,42 @@ bool isDebuging() {
 
 当然如果MachO文件的动态链接库的顺序被改变了，还是会被别人先hook，这个成本就比较高了
 
+```objc
+#import "fishhook.h"
+
+#define PT_DENY_ATTACH  31
+
+// 原方法
+static int (*ptrace_p)(int _request, pid_t _pid, caddr_t _addr, int _data);
+
+// 新方法
+int my_ptrace(int _request, pid_t _pid, caddr_t _addr, int _data) {
+    if (_request != PT_DENY_ATTACH) {
+        return ptrace_p(_request, _pid, _addr, _data);
+    } else {
+        return 0;
+    }
+}
+
+// 在动态库的方法里面添加重绑
++ (void)load {
+    struct rebinding ptraceBd;
+    // 符号
+    ptraceBd.name = "ptrace";
+    // 新方法
+    ptraceBd.replaced = (void *)&ptrace_p;
+    // 原方法
+    ptraceBd.replacement = my_ptrace;
+
+    struct rebinding bds[] = {ptraceBd};
+    // 绑定符号
+    rebind_symbols(bds, 1);
+}
+```
+
 ## 防hook
 
-对于OC的方法的hook通常是使用runtime的方法交换来实现`method_exchangeImplementations`，所以我们确保这个方法是安全的，就能很大程度上降低OC方法被hook
+对于`OC`的方法的hook通常是使用runtime的方法交换来实现`method_exchangeImplementations`，所以我们确保这个方法是安全的，就能很大程度上降低OC方法被hook
 
 由于dyld加载程序时候，对于外部符号（例如系统函数）是`lazybind`加载的，编译的时候并不是绑定真实的地址，而是在运行时动态绑定的，所以`fishhook`可以hook系统方法
 
@@ -227,6 +285,72 @@ bool isDebuging() {
 
 另外由于程序库内部的`C方法`比较难被hook，对于一些敏感的方法可以放到C方法中（在命名也做一些混淆处理）
 
+## 防fishhook
+
+我们知道系统库的方法可以被fishhook替换掉，如何防fishhook呢
+
+### dlopen+dlsym
+
+采用`dlopen+dlsym`调用系统方法可以防fishhook，如上面调用`ptrace`的第二种方式
+
+### syscall
+
+使用系统函数`syscall`调用`ptrace`
+
+```objc
+// 第一个参数为函数的编号，后面的参数为对应函数的参数
+int syscall(int, ...);
+```
+
+通过`<sys/syscall.h>`头文件找到对应的`ptrace`函数编号为`26`
+
+```h
+...
+#define SYS_setuid         23
+#define SYS_getuid         24
+#define SYS_geteuid        25
+#define SYS_ptrace         26
+#define SYS_recvmsg        27
+#define SYS_sendmsg        28
+...
+```
+
+调用
+
+```objc
+syscall(26, PT_DENY_ATTACH, 0, 0);
+```
+
+### 汇编调用
+
+双面两种方式都是基于符号调用函数，这里有个缺点是可以被`符号断点`短住，这样攻击者，可以先断住符号断点，然后跳过该符号函数从而让我们的代码失效，如果我们写的是汇编代码，则不会被符号断点跟踪到，下面用汇编执行ptrace
+
+```objc
+asm volatile(
+    "mov x0,#31\n"
+    "mov x1,#0\n"
+    "mov x2,#0\n"
+    "mov x3,#0\n"
+    "mov x16,#26\n"//中断根据x16 里面的值，跳转ptrace
+    "svc #0x80\n"//这条指令就是触发中断（系统级别的跳转！）
+);
+
+#ifdef __arm64__
+    asm(
+        "mov x0,#0\n"
+        "mov w16,#1\n"
+        "svc #0x80\n"
+    );
+#endif
+#ifdef __arm__ //32位下
+    asm(
+        "mov r0,#0\n"
+        "mov r12,#1\n"
+        "svc #80\n"
+    );
+#endif
+```
+
 ## 小结
 
-安全防护之后更好，没有最好，我们只能增加攻击者的成本，增加逆向难度。
+安全防护之后更好，没有最好，我们只能增加攻击者的成本，增加逆向难度
