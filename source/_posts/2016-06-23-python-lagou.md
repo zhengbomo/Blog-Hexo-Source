@@ -15,19 +15,19 @@ tags: [爬虫]
 
 <!-- more -->
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/15206332.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/15206332.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/25682703.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/25682703.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/42481592.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/42481592.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/26443417.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/26443417.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/39682738.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/39682738.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/45082468.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/45082468.jpg)
 
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/99594263.jpg)
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/99594263.jpg)
 
 
 * 可以看到北京薪资最高，
@@ -39,7 +39,9 @@ tags: [爬虫]
 当然上面只是拉勾网一家最近一个月的数据
 
 ## 一、准备
+
 ### 1. 要点
+
 * urllib2库的简单使用
 * sqlite的使用（入库，统计）
 * flask的简单使用
@@ -52,8 +54,10 @@ Post数据：`first=false&pn=12&kd=iOS`
 pn为页数，kd为搜索关键字
 
 ## 二、爬取数据
+
 由于拉勾网的接口没有加密，也没有做限制，爬取的代码很简单，cookie都不用，下面是爬取的代码
-```python
+
+```py
 @staticmethod
 def __download(url, data):
     """下载url内容"""
@@ -78,26 +82,32 @@ if __name__ == '__main__':
     else:
         logger.error('download fail')
 ```
+
 爬完之后，我们可以进行分析入库，这里会用到json库
 
 拉勾网的薪资信息使用`**k-**k`, `**k以上`, `**k以下`表示，这里我把他们解析成三个字段：`minsalary`, `midsalary`, `maxsalary`，mid取最大或最小或中间值，`minsalary`和`maxsalary`可空，在统计的时候使用的是`midsalary`作为薪资值
 
 最后我们得到数据库
-![](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/61622306.jpg)
+
+![ ](http://7xqzvt.com1.z0.glb.clouddn.com/16-6-28/61622306.jpg)
 
 ## 三、分析
+
 接下来是通过浏览器展现图表，这里使用的Flask框架作为Web服务器
+
 ### 1. 安装
-```bash
-$ sudo pip install virtualenv
-$ sudo pip install flask
+
+```sh
+sudo pip install virtualenv
+sudo pip install flask
 
 # 图表库
-$ sudo pip install chartkick
+sudo pip install chartkick
 ```
 
-，新建一个模块`ChartServer.py`
-```python
+新建一个模块`ChartServer.py`
+
+```py
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
@@ -140,6 +150,7 @@ if __name__ == "__main__":
 ```
 
 模板定义，模板的路径为`/templates/index.html`
+
 ```html
 <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='chartkick.js') }}"></script>
@@ -150,15 +161,17 @@ if __name__ == "__main__":
 {% column_chart data with library={"title":{"text": title}, "subtitle": {"text": subtitle}} %}
 {% area_chart data with library={"title":{"text": title}, "subtitle": {"text": subtitle}} %}
 ```
-这里使用的几个js文件引用的是本地文件`/static/jquery.min.js`, `/static/chartkick.js`, `/static/highcharts.js`
 
+这里使用的几个js文件引用的是本地文件`/static/jquery.min.js`, `/static/chartkick.js`, `/static/highcharts.js`
 
 运行`ChartServer`模块当我们请求 `/percent/广州/10`这个url的时候，就会执行`job_percent_for_city`方法，然后返回渲染后的文本输出到浏览器
 
 ## 四、总结
+
 本文主要记录了爬取的一些要点和过程，更多细节可以到[这里](https://github.com/zhengbomo/python_practice)直接查看代码
 
 ## 五、参考链接
+
 * [Flask的中文介绍](http://docs.jinkan.org/docs/flask/)
 * [chartkick+flask画报表](http://www.361way.com/chartkick-flask/4477.html)
 * [chartkick.py项目](https://github.com/mher/chartkick.py)
