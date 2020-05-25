@@ -13,6 +13,8 @@ categories: iOS
 
 <!-- more -->
 
+## 懒加载例子
+
 先看个例子
 
 ```objc
@@ -54,13 +56,19 @@ Test`main:
 ```s
 Test`printf:
     0x10486bf74 <+0>: nop
-    0x10486bf78 <+4>: ldr    x16, #0x4088              ; (void *)0x000000010486bf98
+    0x10486bf78 <+4>: ldr    x16, #0x4088              ; (void *)0x0000000102a43fa8
 ->  0x10486bf7c <+8>: br     x16
 ```
 
-* 第一次会跳到`0x000000010486bf98`这个地址，这个值存放在对应`__DATA`段的`__la_symbol_ptr`
-* 这段代码对应`__TEXT`段`__stub_helper`里面，第一次会执行这里进行符号绑定
-* 绑定完成后，会修改`__DATA`段的`__la_symbol_ptr`里面的值
+这段代码对应MachO文件中`__DATA`段的`__stubs`，MachOView没有显示出汇编代码（文件偏移地址=内存偏移地址 - ASLR - PAGESIZE）
+
+{% img /images/post/fish/text-stubs.png %}
+
+* 第一次会跳到`0x0000000102a43fa8`这个地址，去掉ASLR为`0x0000000100007fa8`，这个值存放在对应`__DATA`段的`__la_symbol_ptr`，fishhook也是修改这里的值，达到替换方法的目的
+    {% img /images/post/fish/data-la-symbol-ptr.png %}
+* `0x0000000100007fa8`地址对应代码`__TEXT`段`__stub_helper`里面，第一次会执行这里进行符号绑定
+    {% img /images/post/fish/text-stub-helper.png %}
+* 绑定完成后，会修改内存中`__DATA`段的`__la_symbol_ptr`里面的值
 
 下面是第二次执行`printf`，x16的值以及是`0x000000019d06df5c`了，这个就是真实的`printf`地址
 
@@ -73,7 +81,7 @@ Test`printf:
 
 ## fishhook源码分析
 
-fishhook就是利用了MachO对于符号（如：printf）在运行时才做真实地址的绑定（`__DATA`段`__la_symbol_ptr`或`__DATA_CONST`段`__got`），找到对应的符号占位地址修改为我们自己的函数地址，改地址存放在DATA段
+fishhook就是利用了MachO对于符号（如：printf）在运行时才做真实地址的绑定（`__DATA`段`__la_symbol_ptr`或`__nl_symbol_ptr`），找到对应的符号占位地址修改为我们自己的函数地址
 
 `fishhook.c`源码如下
 
@@ -302,19 +310,18 @@ static void perform_rebinding_with_section(struct rebindings_entry *rebindings,
 
 整个过程
 
-* 读取MachO文件的LoadCommand的地址和数量
+* 获取LoadCommand的地址和数量
 * 遍历LoadCommand，获取到`__LINKEDIT`，`LC_SYMTAB`, `LC_DYSYMTAB`信息
 * 根据LoadCommand的段偏移量和ASLR偏移量，算出`符号表`，`动态符号表`，`字符串表`的内存地址
 * 遍历LoadCommand，找出`__DATA`段和`__DATA_CONST`段，遍历`S_LAZY_SYMBOL_POINTERS`和`S_NON_LAZY_SYMBOL_POINTERS`段信息
 * 如果是`__DATA_CONST`，则需要修改内存权限为可读写
 * 遍历上面两个段，过滤`abs`和`本地符号`，找到匹配符号的，保存原来的地址，替换为新的符号地址
   * 通过`__la_symbol_ptr`的`reserved1`字段找到第一个需要动态绑定的符号在`Dynamic Symbol Table`中的位置
-  * `Dynamic Symbol Table`中获取到`Symbol Table`的Index
-  * 在`Symbol Table`获取`String Table`的偏移量，得到`符号名`
-
     {% img /images/post/fish/data-la-symbol-ptr-reserved1.png %}
     {% img /images/post/fish/dynamic-symbol-table-reserved1.png %}
+  * `Dynamic Symbol Table`中获取到`Symbol Table`的Index
     {% img /images/post/fish/symbol-table-info.png %}
+  * 在`Symbol Table`获取`String Table`的偏移量，得到`符号名`
     {% img /images/post/fish/string-table-offset.png %}
-
+  * 找到匹配的符号名，替换对应的段信息
 * 恢复`__DATA_CONST`内存权限为只读
