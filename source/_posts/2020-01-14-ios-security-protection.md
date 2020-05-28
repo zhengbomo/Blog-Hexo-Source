@@ -63,6 +63,16 @@ categories: iOS
 * 类名方法名混淆，OC的话可以用宏占位和宏替换来做
 * llvm编译器混淆
 
+## 反注入（已失效）
+
+dyld在加载MachO的时候，会判断segments中判断是否有restrict这个段，如果有的话,那么就不会加载`DYLD_INSERT_LIBRARIES`环境变量的动态库，所以可以在程序中加入restrict这个字段
+
+在`Xcode` -> `Build Settings` -> `Other Link Flags`添加`-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null`标记即可，使用MachOView即可看到load commands中多了`__RESTRICT`段
+
+![ ](/images/post/macho-restrict.png)
+
+> iOS10以后,苹果在dyld中就不在检测__restrict字段，已经失效了
+
 ## 防重签名
 
 我们都知道，App在打包签名后在app里面会带上`embedded.mobileprovision`，系统会通过该文件校验应用是否合法，这个文件就是我们打包用的文件，我们我们可以在代码中校验该文件是不是我们自己的，如果不是，则退出程序（AppStore下载的包没有`embedded.mobileprovision`）

@@ -8,7 +8,9 @@ categories: docker
 
 ## 初体验
 
-安装一个 nginx 并运行  
+<!-- more -->
+
+安装一个 nginx 并运行
 执行命令
 
 ```sh
@@ -157,7 +159,3 @@ docker run -it ubuntu /bin/bash
     ```sh
     docker commit <conainer_id> mynginx:v1.0
     ```
-
-## 制作 Docker 镜像
-
-### Dockfile
