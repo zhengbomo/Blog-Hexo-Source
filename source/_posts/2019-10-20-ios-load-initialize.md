@@ -455,4 +455,4 @@ void callInitialize(Class cls)
 1. 第一次使用的时候（objc_msgSend）调用
 2. 先调用父类`initialize`，再调用子类的
 3. 调用方法使用`objc_msgSend`，如果子类没有实现`initialize`，会调用父类的`initialize`（存在多次调用的问题）
-4. 由于使用`objc_msgSend`调用，与普通方法一样，分类的`initialize`方法会先找到，相当于覆盖类的`initialize`方法，顺序看编译顺序
+4. 由于使用`objc_msgSend`调用，与普通方法一样，分类的`initialize`方法会先找到，相当于覆盖类的`initialize`方法，顺序与编译顺序相反（后编译的分类方法会被加到前面）
