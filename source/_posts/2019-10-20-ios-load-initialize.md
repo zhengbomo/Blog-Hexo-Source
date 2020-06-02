@@ -93,10 +93,7 @@ void call_load_methods(void)
 }
 ```
 
-可以看出，加载load方法的加载顺序
-
-1. 先加载类的load方法
-2. 在加载Category里面的load方法
+可以看出，加载load方法的加载顺序，先加载类的load方法，再加载Category里面的load方法
 
 进入`call_class_loads`方法
 
@@ -129,8 +126,7 @@ static void call_class_loads(void)
 }
 ```
 
-
-这里拿到了`loadable_classes`这个是带有`load`方法的类列表，并且可以直接拿到load方法的`imp`直接调用，**这里没有使用消息发送机制调用方法，而是直接拿到IMP直接调用**，签名如下
+这里拿到了`loadable_classes`这个是带有`load`方法的类列表，并且可以直接拿到load方法的`imp`直接调用，**这里没有使用objc_msgSend机制调用方法，而是直接拿到IMP直接调用**，签名如下
 
 ```c
 typedef void(*load_method_t)(id, SEL);
@@ -250,6 +246,12 @@ void add_class_to_loadable_list(Class cls)
 
 我们在`schedule_class_load`方法看到，这里面做了一次递归，也就是如果存在父类，会先添加父类，所以**父类的load方法会比子类先执行**
 
+可以看出，加载load方法的加载顺序
+
+1. 父类的load方法
+2. 再加载子类的load方法（加载顺序为编译顺序）
+3. 再加载category里面的load方法（加载顺序为编译顺序）
+
 ## initialize
 
 由于`initialize`是在调用的时候才执行的，我们调试一下看看
@@ -350,9 +352,9 @@ IMP lookUpImpOrForward(id inst, SEL sel, Class cls, int behavior)
         cls = initializeAndLeaveLocked(cls, inst, runtimeLock);
         // runtimeLock may have been dropped but is now locked again
 
-        // If sel == initialize, class_initialize will send +initialize and 
-        // then the messenger will send +initialize again after this 
-        // procedure finishes. Of course, if this is not being called 
+        // If sel == initialize, class_initialize will send +initialize and
+        // then the messenger will send +initialize again after this
+        // procedure finishes. Of course, if this is not being called
         // from the messenger then it won't happen. 2778172
     }
 
@@ -423,9 +425,34 @@ IMP lookUpImpOrForward(id inst, SEL sel, Class cls, int behavior)
 ```objc
 // initializeAndLeaveLocked -> initializeAndMaybeRelock -> initializeNonMetaClass -> callInitialize
 
-((void(*)(Class, SEL))objc_msgSend)(cls, @selector(initialize));
+void initializeNonMetaClass(Class cls)
+{
+    ASSERT(!cls->isMetaClass());
+
+    Class supercls;
+    bool reallyInitialize = NO;
+
+    // Make sure super is done initializing BEFORE beginning to initialize cls.
+    // See note about deadlock above.
+    supercls = cls->superclass;
+    if (supercls  &&  !supercls->isInitialized()) {
+        initializeNonMetaClass(supercls);
+    }
+
+    ...
+}
+
+void callInitialize(Class cls)
+{
+    ((void(*)(Class, SEL))objc_msgSend)(cls, @selector(initialize));
+    asm("");
+}
 ```
 
-这里`initializeNonMetaClass`进行了递归，如果存在父类，则先调用父类的方法，这里的方法调用，用到了消息发送`objc_msgSend`
+这里`initializeNonMetaClass`对`superclass`进行了递归，如果存在父类，则先调用父类的方法
+而`callInitialize`方法用到了消息发送`objc_msgSend`，根据消息发送机制，如果子类没有找到实现的方法，会到父类里面查找，找到方法，则调用，所以，如果多个子类没有实现initialize，而父类实现了，在不同的子类初始化的时候都会调用父类的`initialize`方法，导致`initialize`被调用多次
 
-当我们第一次调用一个OC类的方法的时候，就会触发`objc_msgSend`，然后会经过上面流程，最后调用`initialize`
+1. 第一次使用的时候（objc_msgSend）调用
+2. 先调用父类`initialize`，再调用子类的
+3. 调用方法使用`objc_msgSend`，如果子类没有实现`initialize`，会调用父类的`initialize`（存在多次调用的问题）
+4. 由于使用`objc_msgSend`调用，与普通方法一样，分类的`initialize`方法会先找到，相当于覆盖类的`initialize`方法，顺序看编译顺序
