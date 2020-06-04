@@ -68,7 +68,7 @@ Swift支持上面三种函数派发方式，Swift编译器会根据不同的情�
 
 4. 使用`private`声明的方法和属性，会隐式`final`声明
 5. `值类型`的方法，`struct`和`enum`都是值类型
-6. 纯Swift（没有继承自NSObject的类）的`extension`中定义的所有方法
+6. `extension`中没有使用`@objc`修饰的实例方法
 
 ### 函数表派发
 
