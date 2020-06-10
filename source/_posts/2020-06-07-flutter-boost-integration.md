@@ -203,8 +203,59 @@ categories: flutter
     }
     ```
 
-6. TODO: native给flutter发消息
+6. native给flutter发消息
 
+    ```swift
+    FlutterBoostPlugin.sharedInstance().sendEvent("showToast", arguments: ["message": "native消息"]);
+    ```
+
+    flutter 监听消息
+
+    ```dart
+    // 监听消息，返回值是个匿名方法，可以取消监听
+    _listenCancelable = FlutterBoost.singleton.channel.addEventListener('showToast', (name, arguments) async {
+        var msg = arguments["message"];
+        if (msg != null) {
+            await _hudKey.currentState.showAndDismiss(ProgressHudType.success, msg);
+        }
+        return null;
+    });
+
+    // 取消监听
+    _listenCancelable.call()
+    ```
+
+7. flutter给native发消息
+
+    ```swift
+    private var cancelable: FLBVoidCallback?
+
+    ...
+
+    // 监听flutter发来的消息
+    cancelable = FlutterBoostPlugin.sharedInstance().addEventListener({ [weak self] (name, arguments) in
+        guard let self = self else { return }
+
+        if let arguments = arguments, let msg = arguments["message"] as? String {
+            let vc = UIAlertController(title: "tip", message: msg, preferredStyle: .alert)
+            vc.addAction(UIAlertAction(title: "cancel", style: .default, handler: nil))
+            self.present(vc, animated: true, completion: nil)
+        }
+    }, forName: "alert");
+
+    ...
+
+    // 取消监听
+    cancelable?()
+    ```
+
+    flutter发送消息
+
+    ```dart
+    FlutterBoost.singleton.channel.sendEvent("alert", {"message": "flutter消息"});
+    ```
+
+> flutter给native发消息交互也可以使用`FlutterMethodChannel`
 
 ### 兼容侧滑返回
 
