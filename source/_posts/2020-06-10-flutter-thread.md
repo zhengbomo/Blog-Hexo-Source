@@ -18,7 +18,7 @@ Flutter是基于Dart语言，而Dart是单线程语言，通常情况下，任�
 
 应用程序启动后，执行main函数，然后会开始运行`main isolate`，每个isolate都有两个事件队列，分别是`event queue`和`microtask queue`，有点类似iOS中的`sourcd0`, `source1`，`micro queue`优先级高于`event queue`，只有microtask queu为空时，才会执行event queue
 
-* `event queue`: 负责处理I/O事件，手势，绘制，其他外部事件（如通过Future添加的事件）
+* `event queue`: 负责处理I/O事件，手势，Timer，绘制，其他外部事件（如通过Future添加的事件）
 * `microtask queue`: 负责处理优先级更高的事件
 
 > 由于microtask queue会优先执行，为了避免渲染，和手势处理的延迟，对于复杂的计算，不应该放在`microtask queue`里面，应该放到`event queue`，而对于相对比较耗时的计算，应该考虑放到其他`isolate`运行（多线程），避免界面卡顿
