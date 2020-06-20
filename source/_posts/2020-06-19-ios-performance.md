@@ -97,7 +97,7 @@ Xcode可以直接看到App的内存占用，我们也可以通过系统方法获
 1. CPU计算图层树布局，图片解码，文字渲染，然后交给GPU
 2. GPU渲染图层树，然后放到屏幕缓冲区上
 
-下一个垂直信号到来的时候，如果CPU或GPU消耗的时间过长，GPU还来不及渲染到缓冲区中，视频控制器从屏幕缓冲区读不到数据，就会导致掉帧卡顿
+下一个VSync到来的时候，如果CPU或GPU消耗的时间过长，GPU还来不及渲染到缓冲区中，视频控制器从屏幕缓冲区读不到数据，就会导致掉帧卡顿
 
 {% img /images/post/ios_frame_drop.png %}
 
@@ -154,7 +154,9 @@ FluencyMonitor.shared.stop()
 22  libdyld.dylib                       0x00007fff51a231fd start + 1
 ```
 
-### 离屏渲染（offscreen-rendering）
+### 离屏渲染（Offscreen Rrendering）
+
+这里只讨论GPU上的离屏渲染
 
 * 离屏渲染是屏幕缓冲区外的渲染
 * GPU渲染图层是一层一层渲染的，下面的图层先渲染，上面的图层后渲染
@@ -167,45 +169,47 @@ FluencyMonitor.shared.stop()
 
 * 圆角（`masksToBounds+cornerRadius`），在iOS9之后，UIImageView使用`masksToBounds+cornerRadius`不会触发离屏渲染，其他View仍然会，避免两个属性组合使用，例如图片在内存中切好后再放到View上，对于不需要背景透明的地方，可以放一张图片罩着实现圆角
 * 光栅化（`shouldRasterize`）：会触发离屏渲染，并且会缓存结果，避免每一帧都触发离屏渲染，可以用于优化离屏渲染
-* 遮罩（`mask`）：尽量较少使用
+* 遮罩（`masks`）：尽量减少使用
 * 阴影（`shadow`）：如果设置了`shadowPath`，则不会触发离屏渲染
+* 抗锯齿（`allowsEdgeAntialiasing`）：默认关闭抗锯齿，开启会触发离屏渲染
+* 组透明度（`allowsGroupOpacity`）: 默认开启，可以关闭来避免离屏渲染
 
 ### 卡顿优化
 
 卡顿优化方向主要是减少CPU和GPU的处理时间
 
-1. CPU优化
+1. `CPU优化`
    * 使用CALayer代替UIView，不用响应事件的View设置`isUserInteractionEnabled = true`
    * 不要频繁地修改UIView的位置，和变换属性，比如frame、bounds、transform等
    * 对于复杂的布局，尽量提前计算好布局，并且使用缓存，集中计算，不要频繁改动
    * Autolayout会比直接设置frame消耗更多的CPU资源，对于复杂的布局，使用frame替代autolayout
    * 图片的size最好刚好跟UIImageView的size保持一致，或者不要差太多
-   * 较少一下线程的最大并发数量
+   * 减少一下线程的最大并发数量
    * 尽量把耗时的操作放到子线程（文本处理，图片编解码）
 
-2. GPU优化
-   * 尽量减少视图数量和层次
+2. `GPU优化`
+   * 尽量减少视图数量和嵌套层次
    * GPU能处理的最大纹理尺寸是4096x4096，一旦超过这个尺寸，就会占用CPU资源进行处理，所以纹理尽量不要超过这个尺寸
    * 尽量避免短时间内大量图片的显示，尽可能将多张图片合成一张图片显示
-   * 减少透明的视图（alpha<1），不透明的就设置opaque为yes，较少颜色混合操作
+   * 减少透明的视图（alpha<1），不透明的就设置opaque为yes，减少颜色混合操作
    * 尽量避免出现离屏渲染
 
 ## 耗电优化
 
-* 优化代码逻辑，较少不必要的计算
-* 较少使用定时器
+* 优化代码逻辑，减少不必要的计算
+* 减少使用定时器
 
 ### I/O
 
 * 避免频繁的I/O操作，考虑批量操作
-* 数据量比较大的，建议使用数据库
+* 数据量比较大的局部读写，建议使用数据库，数据库对局部读写有专门的优化
 * 对于读写比较大的文件数据的时候，可以考虑使用`dispatch_io`，使用GCD异步并行读写，速度更快
 
 ### 网络
 
-* 使用断点虚传，较少重复传输
-* 及时cancel掉不实用的网络请求
-* 使用缓存
+* 大文件使用断点续传，减少重复传输
+* 及时`cancel`掉不使用的网络请求（如当离开ViewController的时候，cancel在ViewController中产生的异步请求）
+* 使用缓存，避免重复请求
 * 压缩数据
 
 ### 定位
@@ -213,20 +217,22 @@ FluencyMonitor.shared.stop()
 * 如果只是需要快速确定用户位置，用`CLLocationManager.requestLocation`方法。定位完成后，会自动让定位硬件断电
 * 如果不是导航应用，尽量不要实时更新位置，定位完毕就关掉定位服务
 * 尽量降低定位精度，比如尽量不要使用精度最高的`kCLLocationAccuracyBest`
-* 需要后台定位时，尽量设置pausesLocationUpdatesAutomatically为YES，如果用户不太可能移动的时候系统会自动暂停位置更新
+* 需要后台定位时，尽量设置`pausesLocationUpdatesAutomatically = true`，系统会根据情况自动暂停位置更新
 
 ### 硬件检测优化
 
 用户移动、摇晃、倾斜设备时，会产生动作(motion)事件，这些事件由加速度计、陀螺仪、磁力计等硬件检测。在不需要检测的场合，应该及时关闭这些硬件
+
+> 做到用到的时候才申请，用完就关闭
 
 ## 启动优化
 
 iOS应用的启动可以分为三个阶段
 
 1. `dyld`: 加载可执行文件，递归加载依赖库，符号绑定
-   * 较少动态库
+   * 减少动态库
    * 去掉不用的类，方法和分类，减少数量
-   * Swift优先使用Struct
+   * Swift优先使用`Struct`（结构体分配在栈上，不需要动态管理内存，性能优）
 2. `runtime`: 初始化OC的类，category，load方法，C++静态初始化器，`__attribute__((constructor))`
    * 减少load方法
 3. `main`
