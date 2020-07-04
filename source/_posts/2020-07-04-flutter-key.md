@@ -8,6 +8,8 @@ categories: flutter
 
 我们知道，flutter有三颗树，widget树在每次setState的时候都会重建，而element树不会，而是会通过diff算法，计算出哪些element需要重建，哪些element可以重用，我们通过一个例子来开始
 
+<!-- more -->
+
 ## 例子
 
 ```dart
