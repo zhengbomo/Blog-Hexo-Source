@@ -81,7 +81,7 @@ class _TestPageState extends State<TestPage> {
 
 ## scrollToIndex
 
-自带的ScrollController不支持scrollToIndex，找到下面2个第三方库，支持scrollToIndex
+自带的ScrollController不支持scrollToIndex，找到下面2个第三方库，支持scrollToIndex，两个库都可以精确滑动到对应的位置
 
 1. [`scroll_to_index`](https://pub.dev/packages/scroll_to_index): 通过分段滑动，边滑动边计算，在滑动的过程中可以得到widget的高度，达到scrollToIndex的目的
 2. [`scrollable_positioned_list`](https://pub.dev/packages/scrollable_positioned_list)
@@ -91,15 +91,17 @@ class _TestPageState extends State<TestPage> {
 
 ### 存在问题
 
-* `scroll_to_index`: 由于是采用多次滚动的方式，对于数据量大的话滑动会持续时间比较差，而且看起来非常不顺滑，抖动厉害，性能消耗比较大
-* `scrollable_positioned_list`: 当滑动到底部（最后一个项）的时候，会出现bounce
+* `scroll_to_index`: 由于是采用多次滚动的方式，对于数据量大的话滑动会持续时间比较长，而且看起来非常不顺滑，抖动厉害，性能消耗比较大
+* `scrollable_positioned_list`: 当滑动到底部（最后一个项）的时候，他会把index项滑动到0的位置再回弹，会出现bounce
 
-## bounce
+## bounce问题
 
-基于上面问题，考虑对scrollable_positioned_list滑动之前添加溢出检查，避免溢出造成bounce，具体代码见[这里](https://github.com/zhengbomo/flutter.widgets/tree/master/packages/scrollable_positioned_list)
+基于上面问题，考虑对`scrollable_positioned_list`滑动之前添加溢出检查，避免溢出造成bounce，具体代码见[这里](https://github.com/zhengbomo/flutter.widgets/tree/master/packages/scrollable_positioned_list)
+
+scrollable_positioned_list默认使用相对位置alignment，这里改为offset
 
 ```dart
-// 这里去掉了alignment，该用offset
+// 这里去掉了alignment，改用offset
 void _jumpTo({@required int index, double offset}) {
     cancelScrollCallback?.call();
 
