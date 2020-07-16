@@ -9,6 +9,8 @@ categories: OpenGL
 
 为了更好的学习 OpenGL，我们需要对部分专业属于有一些基本认识，本文介绍在计算机图形学常用的一些专业名词
 
+<!-- more -->
+
 ## 图形API
 
 `OpenGL`（Open Graphics Library）是⼀个跨编程语⾔、跨平台的编程图形程序接⼝，它将计算机的资源抽象称为⼀个OpenGL的对象，对这些资源的操作抽象为⼀个个的OpenGL指令
