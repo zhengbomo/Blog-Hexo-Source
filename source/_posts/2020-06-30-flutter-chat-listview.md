@@ -1,5 +1,5 @@
 ---
-title: flutter聊天消息列表
+title: flutter仿微信聊天交互
 tags: [flutter]
 date: 2020-06-30 08:16:15
 updated: 2020-06-30 08:16:15
@@ -14,6 +14,7 @@ categories: flutter
 4. 支持`jumpToIndex`和`scrollToIndex`，避免手动计算位置
 5. 滑动位置要准确，没有误差
 6. 滑动到底部不会出现bounce
+7. 由于键盘上移的时候scrollToEnd
 
 <!-- more -->
 
@@ -225,3 +226,18 @@ List<dynamic> _getCurrentIndexInfo(bool wholeVisible) {
 ```
 
 {% img /images/post/flutter/flutter-listview-insert-keep-position.gif 300 %}
+
+## 键盘处理
+
+键盘弹出的时候，我们希望ChatBar是动画上移的，并且listview需要scrollToEnd，`Scaffold`有个属性`resizeToAvoidBottomInset`用于控制键盘弹出时的内容区域，但是没有动画，直接变化看起来非常突兀，这里关掉了这个属性，我们自己来控制键盘弹出时的UI变化
+
+```dart
+Scaffold(
+    resizeToAvoidBottomInset: false,
+    ...
+)
+```
+
+如果使用动画修改ListView的高度，则无法和scrollToEnd配合起来，应为scrollToEnd无法根据动画一致滚动，这样性能上会比较差，这里采用占位的方式，键盘弹出的时候，不修改ListView的高度，而是在ListView底部添加一个`占位item`，修改这个占位item高度（不需要动画），然后scrollToEnd，这个滚动可以做到平滑，另外ChatBar键盘弹出时添加上动画即可
+
+仿写微信项目在[这里](https://github.com/zhengbomo/flutter_wechat)

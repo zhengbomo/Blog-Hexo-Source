@@ -1,6 +1,6 @@
 ---
-title: OpenGL图像渲染解析
-tags: [OpenGL]
+title: iOS图像渲染原理解析
+tags: [OpenGL, iOS]
 date: 2020-07-10 21:33:03
 updated: 2020-07-10 21:33:03
 categories: iOS
@@ -79,6 +79,42 @@ C：正在渲染
 
 {% img /images/post/opengl/coreanimation-pipe.png 1000 %}
 
-任何一个View(例如：UIButton、UIImage)的加载都来到CoreAnimation, 首先会处理它的事件(点击、改变位置等)，然后进行提交Commit Transaction。再对图片提交给Render Server(Core Animation)进行解码，等待下一个VSync来进行下一个回调，`RenderService`通过`OpenGL/Metal`把控制操作和数据信息传递给GPU，GPU通过下面渲染流程程（顶点数据->顶点着⾊器->⽚元着⾊器），再渲染到帧缓冲区，最终被视频控制器显示到屏幕上
+`CoreAnimation`会在`Runloop`注册一个`Observer`监听触摸事件，当点击事件到来的时候，Runloop会被唤醒处理相关的业务逻辑（UIView的创建，修改，添加动画等）
+
+最终会在CALayer通过`CATransaction`提交到`RenderServer`中，RenderServer会对图片进行解码，并等待下一个`VSync`的到来
+
+VSync信号到来后，`RenderService`会通过OpenGL/Metal做一些绘制操作，然后把处理完的数据（纹理，顶点，着色器等）提交给`GPU`
+
+GPU通过下面渲染流程程（顶点数据->顶点着⾊器->⽚元着⾊器），渲染到`帧缓冲区`，然后交换`帧缓冲区`（双缓冲区）
+
+下一个VSync信号到来的时候，视频控制器读取帧缓冲区的数据显示到屏幕上
+
+如果此处有动画，CoreAnimation会通过`DisplayLink`等机制多次触发相关流程
 
 {% img /images/post/opengl/renderservice.png 800 %}
+
+### 渲染流程
+
+1. `CPU`阶段
+   * 布局（Frame）: `layoutSubviews`, `addSubview`
+   * 显示（Core Graphics）: `drawRect`, 绘制字符串
+   * 准备（QuartzCore/Core Animation）：图片`decode`
+   * 提交：通过`IPC`提交(打包好的layers以及动画属性)给OpenGL/Metal，递归提交subview的layers
+
+2. `OpenGL ES/Metal`阶段，主要是对图层进行取色，采样，生成纹理，绑定数据，生成前后帧缓存，为GPU渲染做准备
+   * 生成(Generate)
+   * 绑定(Bind)
+   * 缓存数据(Buffer Data)
+   * 启用(Enable)
+   * 设置指针(Set Pointers)
+   * 绘图(Draw)
+   * 清除(Delete)
+
+3. `GPU`阶段
+   * 接收提交的纹理（Texture）和顶点描述（三角形）
+   * 应用变换（transform）
+   * 合并渲染（离屏渲染等）
+
+## 参考
+
+* [iOS界面渲染流程分析](https://www.jianshu.com/p/39b91ecaaac8)
