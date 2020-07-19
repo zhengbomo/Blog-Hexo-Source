@@ -1,5 +1,5 @@
 ---
-title: OpenGL绘制一个三角形
+title: 【OpenGL案例1】绘制一个三角形
 tags: [OpenGL]
 date: 2020-07-11 21:42:13
 updated: 2020-07-11 21:42:13

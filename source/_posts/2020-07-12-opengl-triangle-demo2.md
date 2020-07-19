@@ -1,5 +1,5 @@
 ---
-title: OpenGL正方形键位控制
+title: 【OpenGL案例2】正方形键位控制
 tags: [OpenGL]
 date: 2020-07-12 19:40:12
 updated: 2020-07-12 19:40:12
