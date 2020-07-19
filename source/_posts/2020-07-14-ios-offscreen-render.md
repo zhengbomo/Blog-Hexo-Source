@@ -10,20 +10,20 @@ categories: iOS
 
 <!-- more -->
 
-## 画家算法
+## 油画算法
 
-计算机图层的叠加绘制大概遵循`画家算法`，在这种算法下会按层绘制，首先绘制距离较远的场景，然后用绘制距离较近的场景覆盖较远的部分，如下图。
+计算机图层的叠加绘制大概遵循`油画算法`，在这种算法下会按层绘制，首先绘制距离较远的场景，然后用绘制距离较近的场景覆盖较远的部分，如下图。
 
-{% img /images/post/opengl/painter-draw.png 800 画家算法 %}
+{% img /images/post/opengl/painter-draw.png 800 油画算法 %}
 
 这样就不会导致远的物体挡住近的物体，但是有个局限，就是无法在后面一层渲染完成后，再回去修改前面图层，因为前面的图层已经被覆盖了
 
 ## 离屏渲染
 
-对于有前后依赖的图层（如全局剪切，阴影等），画家算法无法满足我们的需求，对于有前后依赖的图层，我们可以再另开辟一个空间，用于临时渲染，渲染完成后再渲染到当前的缓冲区上，这个临时渲染，就是离屏渲染，由于需要开辟一个新的内存空间，由于共享同一个上下文，所以还需要做上下文切换，并且渲染完成后还要进行拷贝操作
+对于有前后依赖的图层（如全局剪切，阴影等），油画算法无法满足我们的需求，对于有前后依赖的图层，我们可以再另开辟一个空间，用于临时渲染，渲染完成后再渲染到当前的缓冲区上，这个临时渲染，就是`离屏渲染`，由于需要开辟一个新的内存空间，并且共享同一个上下文，所以还需要做上下文切换（状态切换），并且渲染完成后还要进行拷贝操作
 
 1. `开辟临时缓存空间`
-2. `上下文切换`
+2. `上下文切换`，上下文对象比较大，切换操作会带来一定的性能消耗
 3. `内存拷贝`
 4. `额外的渲染`（没有进一步考证）
 
@@ -39,7 +39,7 @@ categories: iOS
 
 > `layer.cornerRadius`只作用`backgroundColor`和`border`，不会作用于`content`，支持`动画`
 
-离屏渲染是系统无法按画家算法一次性渲染完我们的视图才会触发，我们先来看几个iOS的例子，模拟器打开`Color Off-screen Rendered`
+离屏渲染是GPU无法按油画算法一次性渲染完我们的视图才会触发，我们先来看几个iOS的例子，模拟器打开`Color Off-screen Rendered`
 
 ```swift
 // 1. UIImageView
@@ -98,7 +98,7 @@ view.addSubview(label)
 
 基于上面的问题，我们可以有几个优化方向
 
-1. 避免使用裁切操作，如果我们能确保View里面的内容不会溢出，就可以不用`masksToBounds`
+1. 避免使用`裁切`(`masksToBounds`)操作，如果我们能确保View里面的内容不会溢出，就可以不用`masksToBounds`
 2. 即使要用到裁切的操作，尽量放到子view里面，不要在上层view使用masksToBounds，因为裁切需要对所有的layer和subview所有图层都进行裁切，这样离屏渲染会需要更大的空间，裁切更多的图层，应该只对必要的view/layer进行裁切
 3. 提前切好需要的圆角，避免渲染的时候再切
 
@@ -107,16 +107,18 @@ view.addSubview(label)
 * 使用了遮罩的 layer (`layer.mask`)
 * 需要进行裁剪的 layer (`layer.masksToBounds` / `view.clipsToBounds`)
 * 设置了组透明度为 YES，并且透明度不为 1 的layer (`layer.allowsGroupOpacity` / `layer.opacity`)
-* 添加了投影的 layer (`layer.shadow`)
+* 添加了投影的 layer (`layer.shadow`)，但如果设置了shadowPath，则系统已经知道如何绘制阴影了，不会触发离屏渲染
 * 采用了光栅化的 layer (`layer.shouldRasterize`)，光栅化也可以优化离屏渲染问题
 * 绘制了文字的 layer (`UILabel`, `CATextLayer`, `CoreText`等)
 
 ## 毛玻璃
 
-在iOS系统中，毛玻璃效果可以说应用的非常广泛，从上面分析也可以知道，这个肯定会触发离屏渲染的，图层之间存在依赖，下面是`UIBlurEffect`在GPU上的渲染过程
+在iOS系统中，毛玻璃效果应用的非常广泛，从上面分析也可以知道，这个肯定会触发离屏渲染的，图层之间存在依赖，下面是`UIBlurEffect`的处理过程
+
+{% img /images/post/opengl/uiblureffect-render2.png 600  %}
+
+在GPU的渲染过程如下图
 
 {% img /images/post/opengl/uiblureffect-render.png 1000  %}
 
 GPU在渲染完Content之后，会另外开辟一个`Off-screen buffer`，执行下面步骤，最后再做合并处理，最后再拷贝回`On-screen buffer`上
-
-{% img /images/post/opengl/uiblureffect-render2.png 600  %}
