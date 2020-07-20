@@ -6,9 +6,7 @@ comments: false
 
 ### 简介
 
-不忘初心，方得始终
-
-Windows开发/iOS搬运工
+好的习惯是成功一半
 
 ### 链接
 

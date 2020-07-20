@@ -1,8 +1,8 @@
 ---
 title: OpenGL正背面剔除和深度测试
 tags: [OpenGL]
-date: 2020-07-19 10:29:52
-updated:
+date: 2020-07-16 10:29:52
+updated: 2020-07-16 10:29:52
 categories: OpenGL
 ---
 

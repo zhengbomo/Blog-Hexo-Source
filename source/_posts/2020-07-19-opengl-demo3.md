@@ -59,6 +59,8 @@ void m3dScaleMatrix44(M3DMatrix44f m, float xScale, float yScale, float zScale);
 void m3dMatrixMultiply44(M3DMatrix44f product, const M3DMatrix44f a, const M3DMatrix44f b);
 ```
 
+> 翻转操作可以用旋转，也可以用缩放（缩放到-1）
+
 ### 投影变换
 
 通常也在窗口改变的时候设置
