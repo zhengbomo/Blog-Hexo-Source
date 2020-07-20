@@ -1,8 +1,8 @@
 ---
 title: OpenGL投影、图元和存储着色器
 tags: [OpenGL]
-date: 2020-07-19 21:01:31
-updated: 2020-07-19 21:01:31
+date: 2020-07-18 21:01:31
+updated: 2020-07-18 21:01:31
 categories: OpenGL
 ---
 
@@ -15,6 +15,8 @@ OpenGL有两种投影方式
 | 正投影  | 相同的物体远近看起来都一样大 | GLFrustum::SetPerspective(float fFov, float fAspect, float fNear, float fFar) |
 | 透视投影  | 近大远小 | GLFrustum::SetOrthographic(GLfloat xMin, GLfloat xMax, GLfloat yMin, GLfloat yMax, GLfloat zMin, GLfloat zMax) |
 
+<!-- more -->
+
 {% img /images/post/opengl/two-projection.png 600 %}
 
 ```cpp
@@ -23,7 +25,7 @@ OpenGL有两种投影方式
 // 投影矩阵
 GLFrustum              viewFrustum;
 
- // 设置透视投影
+// 设置透视投影
 viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 500.0f);
 // 获取投影矩阵
 M3DMatrix44f *projectionMatrix = viewFrustum.GetProjectionMatrix();
