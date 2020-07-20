@@ -149,7 +149,7 @@ GLShaderManager::UserStockShader(GLT_SHADER_DEFAULT_LIGHT,
 // 参数3: 投影4*4矩阵
 // 参数4: 点光源的位置
 // 参数5: 漫反射颜⾊值
-GLShaderManager::UserStockShader(GLT_SHADER_POINT_LIGHT_DIEF,
+GLShaderManager::UserStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
                                  GLfloat mvMatrix[16],
                                  GLfloat pMatrix[16],
                                  GLfloat vLightPos[3],
