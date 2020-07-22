@@ -163,6 +163,6 @@ void SpecialKeys(int key, int x, int y){
 }
 ```
 
-{% img /images/post/opengl/square-demo.gif 600 %}
+{% img /images/post/opengl/square-demo.gif 600 键盘控制正方形移动 %}
 
 完整代码见[这里](https://github.com/zhengbomo/OpenGLDemo/tree/master/002--%E9%94%AE%E7%9B%98%E6%8E%A7%E5%88%B6%E6%AD%A3%E6%96%B9%E5%BD%A2)

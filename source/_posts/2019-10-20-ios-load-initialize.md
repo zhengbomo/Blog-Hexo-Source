@@ -93,7 +93,7 @@ void call_load_methods(void)
 }
 ```
 
-可以看出，加载load方法的加载顺序，先加载类的load方法，再加载Category里面的load方法
+可以看出，load方法的加载顺序，先加载类的load方法，再加载Category里面的load方法
 
 进入`call_class_loads`方法
 
@@ -246,7 +246,7 @@ void add_class_to_loadable_list(Class cls)
 
 我们在`schedule_class_load`方法看到，这里面做了一次递归，也就是如果存在父类，会先添加父类，所以**父类的load方法会比子类先执行**
 
-可以看出，加载load方法的加载顺序
+可以看出，load方法的加载顺序
 
 1. 父类的load方法
 2. 再加载子类的load方法（加载顺序为编译顺序）

@@ -176,6 +176,6 @@ void changeSize(int w,int h) {
 
 ## 运行
 
-{% img /images/post/opengl/demo-triangle.jpg 400 %}
+{% img /images/post/opengl/triangle-demo.png 600 三角形 %}
 
 完整demo在[这里](https://github.com/zhengbomo/OpenGLDemo/tree/master/001--%E5%AE%8C%E6%95%B4%E6%B8%B2%E6%9F%93%E4%B8%89%E8%A7%92%E5%BD%A2)
