@@ -120,7 +120,17 @@ Listen 8081
 apache2默认情况下是通过`www-data`用户运行的，修改该用户的文件权限，在 `/etc/apache2/envvars`添加umask设置（ubuntu）
 
 ```sh
-umask 006
+# 修改组为watchdog
+export APACHE_RUN_GROUP=www-data
+
+# 添加
+umask 0002
 ```
 
-给www-data用户添加组，用于访问
+给`www-data`用户添加组，用于访问
+
+## 重启apache
+
+```sh
+sudo systemctl restart apache2
+```
