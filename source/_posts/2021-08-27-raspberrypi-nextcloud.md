@@ -121,13 +121,23 @@ apache2默认情况下是通过`www-data`用户运行的，修改该用户的文
 
 ```sh
 # 修改组为watchdog
-export APACHE_RUN_GROUP=www-data
-
-# 添加
+export APACHE_RUN_GROUP=watchdog
+# 设置umask
 umask 0002
 ```
 
-给`www-data`用户添加组，用于访问
+设置`www-data`用户的组为`watchdog`，用于访问
+
+```sh
+# 修改用户www-data所在组为watchdog
+sudo usermod -g watchdog www-data
+```
+
+设置可道云创建文件/文件夹的权限 `config/config.php`，找到`DEFAULT_PERRMISSIONS`定义，改为0774，让同组用户可以编辑
+
+```php
+define('DEFAULT_PERRMISSIONS',0774);	//新建文件、解压文件默认权限，777 部分虚拟主机限制了777;
+```
 
 ## 重启apache
 
