@@ -1,58 +1,56 @@
 ---
 title: （二）树莓派4B自动控制风扇开关
 tags: [树莓派]
-date: 2021-08-27 11:27:39
+date: 2021-08-28 11:27:39
 updated:
 categories:
 ---
 
-树莓派4B性能强大，发热也大，我在上面跑可道云和aria2基本都要到60-70℃了，通常都会买个外壳接一个小风扇用于散热，淘宝上有很多，挑一个自己喜欢的，我这台设备加了风扇后可以稳定在40-50之间，风扇是随着电源开关控制的，即使关机了，风扇也会转，这里介绍使用三极管控制风扇开关的方法
+树莓派4B性能强大，发热也大，我在上面跑可道云和aria2，在没有风扇的情况下基本都要到60-70℃了，通常都会买个外壳接一个小风扇用于散热，淘宝上有很多，挑一个自己喜欢的，我这台设备加了风扇后可以稳定在40-50之间
 
-![图片](/images/post/raspberrypi_fan.jpeg)
+默认情况下，风扇是随着电源开关控制的，即使关机了，风扇也会转，这里介绍使用三极管控制风扇开关的方法
+
+<!-- more -->
+
+{% img /images/post/raspberrypi/raspberrypi_fan.jpg 300 %}
 
 ## 接线引脚
 
 树莓派4B的引脚如下图
 
-![图片](/images/post/raspberrypi_pin.png)
+{% img /images/post/raspberrypi/raspberrypi_pin.png 400 %}
 
-风扇的正负极接4, 6引脚
-
-## 查看CPU温度
-
-通过读取文件`/sys/class/thermal/thermal_zone0/temp`获得CPU温度
-
-```sh
-# 查看当前CPU温度
-cat /sys/class/thermal/thermal_zone0/temp
-
-# 观察CPU温度，每秒更新一次
-watch -n 1 cat /sys/class/thermal/thermal_zone0/temp
-```
+买来的风扇的正负极接4, 6引脚
 
 ## 通过三极管添加控制线
 
 风扇接上树莓派引脚后就会开启，随电源开关，无法进行控制，关机的时候也会转，通常有两种方式
 
-* 使用三极管接线从而达到控制风扇的目的
-* taobao买T9温控模块（https://item.taobao.com/item.htm?id=553295324487）
+1. 使用三极管接线从而达到控制风扇的目的
+2. taobao买T9温控模块（https://item.taobao.com/item.htm?id=553295324487）
 
-这里使用三极管的方式
+这里第一种方式，添加三极管
 
-* 三极管，我这里用的是S8050，NPN型的三极管
+* `三极管`，我这里用的是S8050（NPN型）的三极管
     我是在这里买的，2.8块钱50个
-* 杜邦线-公对母2根
-* 杜邦线-母对母2根
+* `杜邦线-公对母`: 2根
+* `杜邦线-母对母`: 2根
+
+三极管三级
+
+{% img /images/post/raspberrypi/triode.jpg 250 %}
 
 接线示意图（分别接到4，6，12号引脚上）
 
-![图片]()
+{% img /images/post/raspberrypi/fan_wiring.png 500 %}
 
 效果图
 
-![图片]()
+{% img /images/post/raspberrypi/raspberrypi_fan_final.jpg 800 %}
 
-> 有朋友可能买到的是S8850（PNP型）的三极管，接线和上面不一样，需要注意
+> 有朋友可能买到的是S8850（PNP型）的三极管，接线和上面不一样，需要注意，可以参考这个链接，不过我没试过，[https://blog.csdn.net/Xxy605/article/details/115960846](https://blog.csdn.net/Xxy605/article/details/115960846)
+
+接完之后开机，会发现风扇默认是不转的，我们需要手动控制风扇的开关
 
 ## 通过python脚本控制开关
 
@@ -106,6 +104,18 @@ pwm.start(100)
 
 # 关闭
 pwm.stop()
+```
+
+## 查看CPU温度
+
+通过读取文件`/sys/class/thermal/thermal_zone0/temp`获得CPU温度
+
+```sh
+# 查看当前CPU温度
+cat /sys/class/thermal/thermal_zone0/temp
+
+# 观察CPU温度，每秒更新一次
+watch -n 1 cat /sys/class/thermal/thermal_zone0/temp
 ```
 
 ## 温控风扇脚本
@@ -200,3 +210,4 @@ sudo systemctl start autofan
 sudo systemctl status autofan
 ```
 
+之后每次重启都会自动根据温度开关风扇了
