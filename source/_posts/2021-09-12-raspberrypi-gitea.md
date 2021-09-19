@@ -2,7 +2,7 @@
 title: （六）树莓派4B安装gitea
 tags: [树莓派]
 date: 2021-09-12 16:56:54
-updated:
+updated: 2021-09-12 16:56:54
 categories: 树莓派
 ---
 

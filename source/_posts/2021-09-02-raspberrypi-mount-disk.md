@@ -2,7 +2,7 @@
 title: （三）树莓派开机自动挂载硬盘
 tags: [树莓派]
 date: 2021-09-02 19:13:42
-updated:
+updated: 2021-09-02 19:13:42
 categories: 树莓派
 ---
 
