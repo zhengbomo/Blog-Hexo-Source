@@ -108,6 +108,13 @@ ROOT_PATH = /home/ubuntu/server/gitea/log
 ROUTER    = console
 ```
 
+如果使用gitea内置的SSH服务器的话，需要添加`START_SSH_SERVER`开启服务
+```ini
+[service]
+...
+START_SSH_SERVER = true
+```
+
 ## 开机启动
 
 添加一个系统用户`gitea`用于执行`gitea`
