@@ -99,20 +99,23 @@ import 'package:flutter/material.dart';
 // 空水纹实现工厂
 class NoSplashFactory extends InteractiveInkFeatureFactory {
   @override
-  InteractiveInkFeature create({MaterialInkController controller, RenderBox referenceBox, Offset position, Color color, TextDirection textDirection, bool containedInkWell = false, rectCallback, BorderRadius borderRadius, ShapeBorder customBorder, double radius, onRemoved}) {
-    return _NoInteractiveInkFeature(controller: controller, referenceBox: referenceBox);
+  InteractiveInkFeature create({required MaterialInkController controller, required RenderBox referenceBox, required Offset position, required Color color, required TextDirection textDirection, bool containedInkWell = false, RectCallback? rectCallback, BorderRadius? borderRadius, ShapeBorder? customBorder, double? radius, VoidCallback? onRemoved}) {
+    return _NoInteractiveInkFeature(controller: controller, referenceBox: referenceBox, color: color, onRemoved: onRemoved);
   }
 }
 
-// InkFeature空实现
+// // InkFeature空实现
 class _NoInteractiveInkFeature extends InteractiveInkFeature {
-  _NoInteractiveInkFeature({
-    @required MaterialInkController controller,
-    @required RenderBox referenceBox,
-  }) : super(controller: controller, referenceBox: referenceBox);
-
   @override
-  void paintFeature(Canvas canvas, Matrix4 transform) {}
+  void paintFeature(Canvas canvas, Matrix4 transform) {
+
+  }
+  _NoInteractiveInkFeature({
+    required MaterialInkController controller,
+    required RenderBox referenceBox,
+    required Color color,
+    VoidCallback? onRemoved,
+  }) : super(controller: controller, referenceBox: referenceBox, color: color, onRemoved: onRemoved);
 }
 ```
 
