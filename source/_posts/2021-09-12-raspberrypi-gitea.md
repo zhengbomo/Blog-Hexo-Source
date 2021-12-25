@@ -14,10 +14,7 @@ categories: 树莓派
 
 ```sh
 # 下载gitea
-wget -O gitea https://dl.gitea.io/gitea/1.15.2/gitea-1.15.2-linux-arm64
-
-# 改名
-mv gitea-1.15.2-linux-arm64 gitea
+wget -O gitea https://dl.gitea.io/gitea/1.15.6/gitea-1.15.6-linux-arm64
 
 # 添加权限
 chmod +x gitea
