@@ -1,5 +1,5 @@
 ---
-title: Xcode调试链优化
+title: Xcode调试链优化（速度提升50%+）
 tags: [iOS]
 date: 2021-11-15 14:48:37
 updated: 2021-11-15 14:48:37
@@ -191,11 +191,14 @@ ideviceinstaller -i xxx.ipa
 
 |      | 优化前 | 优化后 |
 | ---- | ---- | ---- | 
-| Linking | 15 | 10.1（下降32%） |    
-| Copy Pod Resources | 11 | 0.1（减少97%） |    
-| Run Custom Script | 32.5 | 0（下降100%)）|
-| Sign | 2.2 | 0.5s（下降77%） |
+| Linking | 15s | 10.1s（下降32%） |    
+| Copy Pod Resources | 11s | 0.1（减少97%） |    
+| Run Custom Script | 32.5s | 0（下降100%)）|
+| Sign | 2.2s | 0.5s（下降77%） |
 | Deploy |40s | 18s（下降55%） |
+| 汇总 |100.7s | 28.7s（下降71%） |
+
+> 数据来源：Xcode编译日志
 
 {% img /images/post/xcodebuildopt/xcode_io_time.png %}
 
