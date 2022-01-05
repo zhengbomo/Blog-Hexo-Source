@@ -27,27 +27,40 @@ Xcode是增量编译的，所以日常开发很多时候，我们都是改少量
 
 > 还有一个较为耗时的时间是`Deploy`，但Xcode并不没有输出Deploy的时间，后面使用`ideviceinstaller`工具单独测试，时间总体上与Xcode基本一致
 
+```sh
+# 安装
+# brew install ideviceinstaller
+
+begin=`date '+%s'`
+# 这里直接拿编译好的app文件安装即可
+ideviceinstaller -i 'xxx.ipa'
+end=`date '+%s'`
+
+# 计算时间差，单位s
+expr $begin - $end
+```
+
 分析
 
-1. Linking: 合并静态资源与地址修正，考虑使用第三方更快的link工具
-2. Embed Pod Frameworks: 主要是处理动态库，拷贝到目标路径，主要影响是动态库数量
-3. Copy Pods Resources: 主要对文件资源拷贝，主要影响是文件数量和大小，数量多则io耗时长
-4. Custom Script：这里是自定义脚本，主要是的图片文件的处理，主要是对图片文件进行展开，文件多则io耗时长
-5. Sign：对整个包签名，主要影响是文件数量和大小，文件多则ios耗时长
-6. Deploy：主要是拷贝文件和签名校验，主要影响是文件数量，文件多则ios耗时长，文件大小影响首次安装，而二次安装会做差异拷贝，影响会减小
+1. Linking: 合并静态资源与地址修正，考虑使用第三方更快的link工具`zld`
+2. Embed Pod Frameworks: 主要是处理动态库，拷贝到目标路径，主要影响是`动态库文件数量`
+3. Copy Pods Resources: 主要对文件资源拷贝，主要影响是`文件IO`
+4. Custom Script：这里是自定义脚本，主要是的图片文件的处理，主要是对图片文件进行展开，文件多则`文件IO`耗时长
+5. Sign：对整个包签名，主要影响是文件数量和大小，文件多则`文件IO`耗时长
+6. Deploy：主要是拷贝文件和签名校验，主要影响是文件数量，文件多则`文件IO`耗时长，文件大小影响首次安装，而二次安装会做差异拷贝，有缓存，影响会减小
 
-有上面可以看出，减少IO操作是一个可行的优化方向，项目中的图片资源是放到根目录的，由于项目中用到的图片非常多，直接使用目录管理，并且使用`Custom Script`脚本单独处理图片，把图片拷贝到包的根目录上，查看`xx直播`在编译完成后的包，总文件数为`9297`个, 其中`8821`个为图片，占95%，文件数量占比大，这意味着每次都要进行大量的IO操作，如果能减少文件的数量，就能减少整个流程的时间
+有上面可以看出，减少IO操作是一个可行的优化方向，项目中的图片资源是放到根目录的，由于项目中用到的图片非常多，直接使用目录管理，并且使用`Custom Script`脚本单独处理图片，把图片拷贝到包的根目录上，查看`xx直播`在编译完成后的包，总文件数为`9297`个, 其中`8821`个为图片，占`95%`，文件数量占比大，这意味着每次都要进行大量的IO操作，如果能减少文件的数量，就能减少整个流程的时间
 
 ## 优化
 
-### IO问题
+### 关于IO问题
 
 对于图片，我们知道除了可以放到根目录，还有可以放到`Images.xcassets`，放到`Images.xcassets`的图片最终会被编译成`Assets.car`，这里考虑把png和jpg图片提前制作成`Assets.car`，在日常开发迭代过程中，项目中用到的图片不会频繁的变动，这里我们考虑提前把图片做成`Assets.car`，如果有变动，再重新编译一次，操作步骤如下
 
 1. 如果项目已经存在`Images.xcassets`，则拷贝一份出来，在它的基础上添加图片
 2. 通过工具把所有图片构造成`xxx.imageset`，放到`Images.xcassets`里面，如
 
-把`bottom_logo@2x.png`和`bottom_logo@2x.png`构造成下面目录结构
+把`bottom_logo@2x.png`和`bottom_logo@3x.png`构造成下面目录结构
 
     ```sh
     ├── bottom_logo.imageset
@@ -60,32 +73,35 @@ Xcode是增量编译的，所以日常开发很多时候，我们都是改少量
 
     ```json
     {
-    "images" : [
-        {
-        "idiom" : "universal",
-        "filename" : "bottom_logo@2x.png",
-        "scale" : "2x"
-        },
-        {
-        "idiom" : "universal",
-        "filename" : "bottom_logo@3x.png",
-        "scale" : "3x"
+        "images" : [
+            {
+            "idiom" : "universal",
+            "filename" : "bottom_logo@2x.png",
+            "scale" : "2x"
+            },
+            {
+            "idiom" : "universal",
+            "filename" : "bottom_logo@3x.png",
+            "scale" : "3x"
+            }
+        ],
+        "info" : {
+            "version" : 1,
+            "author" : "xcode"
         }
-    ],
-    "info" : {
-        "version" : 1,
-        "author" : "xcode"
-    }
     }
     ```
 
 2. 使用`actool`编译`Images.xcassets`
 
 ```sh
-outputPath="path/to/outputpath"
-outputPath="path/to/outputpath/dependenciesPath"
-outputPath="path/to/outputpath/generatedInfoPath"
+# 输入
 xcassetPath="path/to/Images.xcassets"
+# 输出文件夹
+outputPath="path/to/outputpath"
+
+dependenciesPath="path/to/outputpath/dependenciesPath"
+generatedInfoPath="path/to/outputpath/generatedInfoPath"
 
 /usr/bin/actool                                             \
       --output-format "human-readable-text"                 \
@@ -116,15 +132,17 @@ xcassetPath="path/to/Images.xcassets"
 | ---- | ---- | ---- | 
 | Copy Pod Resources | 11s | 0.1s（减少97%） |    
 | Run Custom Script | 32.5 | 0s(减少100%) |
-| Sign | 2.2 | 1.5s（减少45%） |
+| Sign | 4.5 | 2.5s（减少45%） |
 
 从上面的测试结果来看，速度提升效果显著
 
-> 因为优化后的方案有前置处理时间，需要把编译图片为`Assets.car`，这个时间没算上，上面的对比仅供参考，可以与其他操作并行
+> 因为优化后的方案有前置处理时间，需要把编译图片为`Assets.car`，这个时间没算上，上面的对比仅供参考
 
-上面的操作过于繁琐，可以写了一个工具【一键操作】
+需要注意的是，`Assets.car`的图片只能通过`UIImage.named("xxx")`读取，如果项目中是通过路径
 
-{% img /images/post/xcodebuildopt/xcode_build_opt_tool.png 800 工具图片 %}
+上面的操作过于繁琐，这里我写了一个工具进行处理【一键操作】
+
+{% img /images/post/xcodebuildopt/xcode_build_opt_tool.png 800 %}
 
 ### 关于Linking
 
@@ -136,6 +154,7 @@ xcassetPath="path/to/Images.xcassets"
 
 1. Xcode默认使用`SHA-256`签名，我们可以改成更快的`SHA-1`，由于只是本地开发调试使用，不会有安全性问题，在`Other Code Signing Flags`添加`--digest-algorithm=sha1`
 2. iOS校验签名只会二进制的签名，其他文件不签名也不会报错，可以通过过滤文件减少签名的文件，在`Other Code Signing Flags`添加`--resource-rules=/path/to/rule.plist`，`rule.plist`文件如下
+
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -172,9 +191,9 @@ ideviceinstaller -i xxx.ipa
 
 |      | 优化前 | 优化后 |
 | ---- | ---- | ---- | 
-| Linking | 15s | 10.1s（下降32%） |    
-| Copy Pod Resources | 11s | 0.1s（减少97%） |    
-| Run Custom Script | 32.5 | 0s（下降100%)）|
+| Linking | 15 | 10.1（下降32%） |    
+| Copy Pod Resources | 11 | 0.1（减少97%） |    
+| Run Custom Script | 32.5 | 0（下降100%)）|
 | Sign | 2.2 | 0.5s（下降77%） |
 | Deploy |40s | 18s（下降55%） |
 
