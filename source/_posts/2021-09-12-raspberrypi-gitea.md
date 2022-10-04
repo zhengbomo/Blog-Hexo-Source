@@ -14,7 +14,7 @@ categories: 树莓派
 
 ```sh
 # 下载gitea
-wget -O gitea https://dl.gitea.io/gitea/1.15.6/gitea-1.15.6-linux-arm64
+wget -O gitea https://dl.gitea.io/gitea/1.17.2/gitea-1.17.2-linux-arm64
 
 # 添加权限
 chmod +x gitea
@@ -39,38 +39,35 @@ APP_NAME = Gitea: Git with a cup of tea
 RUN_USER = ubuntu
 RUN_MODE = prod
 
-[security]
-INTERNAL_TOKEN     = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2MzE0NjI1NjB9.zFm-QU16evTggiB-CZC2t36MAya4rPeQtUEkeNGGoiA
-INSTALL_LOCK       = true
-SECRET_KEY         = DwHi5bhFbvt1nX2FhzORtb85qfF1AawqWyB2By81lNEcqfcQfyTpAfrOwkMRKRxw
-PASSWORD_HASH_ALGO = pbkdf2
+[server]
+LOCAL_ROOT_URL   = http://192.168.2.11:8899/
+SSH_DOMAIN       = 192.168.2.11
+DOMAIN           = 192.168.2.11
+HTTP_PORT        = 8899
+ROOT_URL         = http://192.168.2.11:8899/
+DISABLE_SSH      = false
+SSH_PORT         = 22222
+LFS_START_SERVER = true
+LFS_JWT_SECRET   = JU6s1q1kgPVDIIKHRzsUkjJ5HgUSBknJGN7FyKf-hgY
+OFFLINE_MODE     = true
 
 [database]
 DB_TYPE  = sqlite3
 HOST     = 127.0.0.1:3306
 NAME     = gitea
 USER     = gitea
-PASSWD   = 
-SCHEMA   = 
+PASSWD   =
+SCHEMA   =
 SSL_MODE = disable
 CHARSET  = utf8
 PATH     = /home/ubuntu/server/gitea/data/gitea.db
 LOG_SQL  = false
 
 [repository]
-ROOT = /home/ubuntu/server/gitea2/data/gitea-repositories
+ROOT = /home/ubuntu/server/gitea/data/gitea-repositories
 
-[server]
-SSH_DOMAIN       = 192.168.2.11
-DOMAIN           = 192.168.2.11
-HTTP_PORT        = 8899
-ROOT_URL         = http://192.168.2.11:8899/
-DISABLE_SSH      = false
-SSH_PORT         = 22
-LFS_START_SERVER = true
-LFS_CONTENT_PATH = /home/ubuntu/server/gitea/data/lfs
-LFS_JWT_SECRET   = PfvIFZjn6C53f_zY96M3yeavAu8dLCUGEU-3CyEWFkc
-OFFLINE_MODE     = true
+[lfs]
+PATH = /home/ubuntu/server/gitea/data
 
 [mailer]
 ENABLED = false
@@ -83,7 +80,7 @@ ALLOW_ONLY_EXTERNAL_REGISTRATION  = false
 ENABLE_CAPTCHA                    = false
 REQUIRE_SIGNIN_VIEW               = false
 DEFAULT_KEEP_EMAIL_PRIVATE        = false
-DEFAULT_ALLOW_CREATE_ORGANIZATION = false
+DEFAULT_ALLOW_CREATE_ORGANIZATION = true
 DEFAULT_ENABLE_TIMETRACKING       = true
 NO_REPLY_ADDRESS                  = noreply.localhost
 
@@ -103,11 +100,22 @@ MODE      = console
 LEVEL     = info
 ROOT_PATH = /home/ubuntu/server/gitea/log
 ROUTER    = console
+
+[repository.pull-request]
+DEFAULT_MERGE_STYLE = merge
+
+[repository.signing]
+DEFAULT_TRUST_MODEL = committer
+
+[security]
+INSTALL_LOCK       = true
+INTERNAL_TOKEN     = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2NjQ3NjIwMDR9.C0b_xPSiljfhuDChyKTnzKuVtvSMjZsFSr31RxRZYLA
+PASSWORD_HASH_ALGO = pbkdf2
 ```
 
 如果使用gitea内置的SSH服务器的话，需要添加`START_SSH_SERVER`开启服务
 ```ini
-[service]
+[server]
 ...
 START_SSH_SERVER = true
 ```
