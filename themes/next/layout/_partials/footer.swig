@@ -49,6 +49,7 @@
       {%- set next_site = 'https://' + theme.scheme | lower + '.theme-next.org' %}
     {%- endif %}
     {{- __('footer.powered', next_url('https://hexo.io', 'Hexo', {class: 'theme-link'}) + ' & ' + next_url(next_site, 'NexT.' + theme.scheme, {class: 'theme-link'})) }}
+    <a href="https://beian.miit.gov.cn/">粤ICP备19099111号-5</a>
   </div>
 {%- endif %}
 
